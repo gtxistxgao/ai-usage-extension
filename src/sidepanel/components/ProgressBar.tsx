@@ -16,11 +16,16 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ percentage, label }) =
         <span className="au-progress__label">{label}</span>
         <span className="au-progress__value">{value}%</span>
       </div>
-      <progress
-        className={`au-progress__meter au-progress__meter--${tone}`}
-        value={value}
-        max={100}
-      />
+      <div
+        className={`au-meter au-meter--${tone}`}
+        role="progressbar"
+        aria-label={label}
+        aria-valuenow={value}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
+        <div className="au-meter__fill" style={{ width: `${value}%` }} />
+      </div>
     </div>
   );
 };

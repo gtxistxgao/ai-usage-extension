@@ -265,6 +265,7 @@ input {
   margin: 3px 0 0;
   color: var(--au-text-muted);
   font-size: 11px;
+  font-variant-numeric: tabular-nums;
 }
 
 .au-card__body {
@@ -306,48 +307,26 @@ input {
   color: var(--au-text);
 }
 
-.au-progress__meter {
+.au-meter {
   width: 100%;
   height: 4px;
-  display: block;
-  appearance: none;
-  -webkit-appearance: none;
-  border: none;
   border-radius: 999px;
+  background: var(--au-track);
   overflow: hidden;
-  background: var(--au-track);
 }
 
-.au-progress__meter::-webkit-progress-bar {
-  background: var(--au-track);
-  border-radius: 999px;
-}
-
-.au-progress__meter::-webkit-progress-value {
+.au-meter__fill {
   height: 100%;
   border-radius: 999px;
   background: var(--au-fill);
   transition: width 260ms ease;
 }
 
-.au-progress__meter::-moz-progress-bar {
-  border-radius: 999px;
-  background: var(--au-fill);
-}
-
-.au-progress__meter--warning::-webkit-progress-value {
+.au-meter--warning .au-meter__fill {
   background: var(--au-fill-warning);
 }
 
-.au-progress__meter--warning::-moz-progress-bar {
-  background: var(--au-fill-warning);
-}
-
-.au-progress__meter--critical::-webkit-progress-value {
-  background: var(--au-fill-critical);
-}
-
-.au-progress__meter--critical::-moz-progress-bar {
+.au-meter--critical .au-meter__fill {
   background: var(--au-fill-critical);
 }
 
@@ -425,7 +404,7 @@ input {
 @media (prefers-reduced-motion: reduce) {
   .au-loader,
   .au-refresh--loading::before,
-  .au-progress__meter::-webkit-progress-value {
+  .au-meter__fill {
     animation: none;
     transition: none;
   }
