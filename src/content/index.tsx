@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client';
 import root from 'react-shadow';
 import { ClaudeUsage, UsageState } from '../shared/types';
 import { clampPercent, getUsageTone, UsageTone } from '../shared/utils';
-import overlayCssUrl from './styles/overlay.css?url';
-import claudeBrandAsset from '../assets/brands/claude-anthropic.jpg';
+import overlayStyles from './styles/overlay.css?inline';
+import claudeBrandAsset from '../assets/brands/claude-anthropic.jpg?inline';
 
 const STORAGE_KEY = 'ai_usage_state';
 const OVERLAY_ENABLED_KEY = 'claude_overlay_enabled';
@@ -58,12 +58,6 @@ const formatUpdatedAgo = (updatedAt: number, now: number): string => {
 
   const hours = Math.floor(mins / 60);
   return `${hours}h ago`;
-};
-
-const toneLabel: Record<UsageTone, string> = {
-  ok: 'Stable',
-  warning: 'Watch',
-  critical: 'At risk',
 };
 
 const toneClass = (percent: number): string => `aiu-meter--${getUsageTone(percent)}`;
@@ -155,7 +149,7 @@ const UsageOverlay: React.FC = () => {
 
   return (
     <root.div className="aiu-root">
-      <link rel="stylesheet" href={overlayCssUrl} />
+      <style>{overlayStyles}</style>
       <div className={`aiu-wrap ${collapsed ? 'aiu-wrap--collapsed' : ''}`}>
         <button
           type="button"
@@ -171,17 +165,13 @@ const UsageOverlay: React.FC = () => {
         <div className={`aiu-card aiu-card--${tone}`}>
           <div className="aiu-header">
             <div>
-              <div className="aiu-title-row">
-                <img className="aiu-brand" src={claudeBrandAsset} alt="Claude by Anthropic" />
-                <p className="aiu-title">Claude Limits</p>
-              </div>
+              <p className="aiu-title">Claude Limits</p>
               <p className="aiu-subtitle">
                 {usage
                   ? `updated ${formatUpdatedAgo(usage.lastUpdated, now)} · reset ${nextResetForOverlay(usage, now)}`
                   : 'waiting for snapshot'}
               </p>
             </div>
-            <span className={`aiu-badge aiu-badge--${tone}`}>{toneLabel[tone]}</span>
           </div>
 
           {usage ? (

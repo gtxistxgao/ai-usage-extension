@@ -107,50 +107,10 @@
   color: #d6d0c6;
 }
 
-.aiu-title-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.aiu-brand {
-  width: 16px;
-  height: 16px;
-  border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
 .aiu-subtitle {
   margin: 2px 0 0;
   font-size: 11px;
   color: var(--aiu-muted);
-}
-
-.aiu-badge {
-  display: inline-flex;
-  border-radius: 999px;
-  padding: 4px 8px;
-  font-size: 11px;
-  letter-spacing: 0.03em;
-  border: 1px solid var(--aiu-border);
-}
-
-.aiu-badge--ok {
-  color: #9ed0ff;
-  border-color: rgba(95, 169, 255, 0.45);
-  background: rgba(95, 169, 255, 0.16);
-}
-
-.aiu-badge--warning {
-  color: #ffd09a;
-  border-color: rgba(255, 186, 102, 0.5);
-  background: rgba(255, 186, 102, 0.16);
-}
-
-.aiu-badge--critical {
-  color: #ffb5a8;
-  border-color: rgba(255, 122, 98, 0.5);
-  background: rgba(255, 122, 98, 0.16);
 }
 
 .aiu-group {
