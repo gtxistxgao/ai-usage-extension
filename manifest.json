@@ -3,15 +3,23 @@
   "name": "AI Usage Tracker",
   "version": "0.1.0",
   "description": "Track AI usage for Claude and Codex",
-  "permissions": ["storage", "sidePanel", "activeTab", "alarms", "cookies"],
+  "permissions": ["storage", "activeTab", "alarms", "cookies"],
   "host_permissions": ["https://claude.ai/*", "https://chatgpt.com/*", "https://chat.openai.com/*"],
   "background": {
     "service_worker": "src/background/index.ts",
     "type": "module"
   },
-  "side_panel": {
-    "default_path": "src/sidepanel.html"
+  "action": {
+    "default_popup": "src/sidepanel.html",
+    "default_title": "AI Usage Tracker"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://claude.ai/*"],
+      "js": ["src/content/index.tsx"],
+      "run_at": "document_idle"
+    }
+  ],
   "icons": {
     "16": "icons/icon-16.png",
     "48": "icons/icon-48.png",

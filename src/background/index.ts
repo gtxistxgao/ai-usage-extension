@@ -1,7 +1,6 @@
 import { UsageService } from './services/UsageService';
 
 chrome.runtime.onInstalled.addListener(() => {
-  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => undefined);
   chrome.alarms.create('refreshUsage', { periodInMinutes: 5 });
   UsageService.refreshAllUsage().catch(() => undefined);
 });
