@@ -1,8 +1,10 @@
+import { STORAGE_KEYS } from '../../shared/constants';
 import { ClaudeUsage, CodexUsage, UsageState } from '../../shared/types';
+import { getUsageTone } from '../../shared/utils';
 
 export class UsageService {
-  private static readonly STORAGE_KEY = 'ai_usage_state';
-  private static readonly CLAUDE_ORG_KEY = 'claude_org_id';
+  private static readonly STORAGE_KEY = STORAGE_KEYS.usageState;
+  private static readonly CLAUDE_ORG_KEY = STORAGE_KEYS.claudeOrgId;
 
   private static readonly CODEX_SESSION_ENDPOINT = 'https://chatgpt.com/api/auth/session';
   private static readonly CODEX_USAGE_ENDPOINT = 'https://chatgpt.com/backend-api/wham/usage';
@@ -124,7 +126,9 @@ export class UsageService {
 
     const user = this.asRecord(session.user);
     const userAccountId = user
-      ? this.asString(user.account_id) ?? this.asString(user.accountId) ?? this.asString(user.default_account_id)
+      ? (this.asString(user.account_id) ??
+        this.asString(user.accountId) ??
+        this.asString(user.default_account_id))
       : null;
 
     if (userAccountId) {
@@ -138,7 +142,10 @@ export class UsageService {
         continue;
       }
 
-      const candidate = this.asString(account.account_id) ?? this.asString(account.id) ?? this.asString(account.uuid);
+      const candidate =
+        this.asString(account.account_id) ??
+        this.asString(account.id) ??
+        this.asString(account.uuid);
       if (candidate) {
         return candidate;
       }
@@ -178,7 +185,7 @@ export class UsageService {
         used: this.extractUsedValue(weekly),
         limit: this.extractLimitValue(weekly),
       },
-      status: this.deriveStatus(max),
+      status: getUsageTone(max),
       lastUpdated: Date.now(),
       raw: data,
     };
@@ -219,7 +226,7 @@ export class UsageService {
         used: this.extractUsedValue(secondary),
         limit: this.extractLimitValue(secondary),
       },
-      status: this.deriveStatus(max),
+      status: getUsageTone(max),
       lastUpdated: Date.now(),
       raw: data,
     };
@@ -238,7 +245,7 @@ export class UsageService {
   private static findWindowInTree(
     source: Record<string, unknown>,
     keys: string[],
-    depth: number = 0
+    depth: number = 0,
   ): Record<string, unknown> | null {
     if (depth > 5) {
       return null;
@@ -266,7 +273,7 @@ export class UsageService {
 
   private static extractWindow(
     source: Record<string, unknown>,
-    keys: string[]
+    keys: string[],
   ): Record<string, unknown> | null {
     for (const key of keys) {
       const candidate = this.asRecord(source[key]);
@@ -277,7 +284,10 @@ export class UsageService {
     return null;
   }
 
-  private static extractPercentage(window: Record<string, unknown> | null, fallback?: unknown): number {
+  private static extractPercentage(
+    window: Record<string, unknown> | null,
+    fallback?: unknown,
+  ): number {
     if (window) {
       const value =
         window.used_percent ??
@@ -301,14 +311,14 @@ export class UsageService {
     }
 
     const directString = this.asString(
-      window.resets_at ?? window.reset_at ?? window.resetsAt ?? window.resetAt ?? null
+      window.resets_at ?? window.reset_at ?? window.resetsAt ?? window.resetAt ?? null,
     );
     if (directString) {
       return this.toIsoString(directString);
     }
 
     const directNumber = this.asNumber(
-      window.resets_at ?? window.reset_at ?? window.resetsAt ?? window.resetAt ?? null
+      window.resets_at ?? window.reset_at ?? window.resetsAt ?? window.resetAt ?? null,
     );
     if (directNumber != null) {
       return this.toIsoFromEpoch(directNumber);
@@ -327,9 +337,11 @@ export class UsageService {
       return undefined;
     }
 
-    return this.asNumber(
-      window.used ?? window.used_count ?? window.used_messages ?? window.used_amount ?? null
-    ) ?? undefined;
+    return (
+      this.asNumber(
+        window.used ?? window.used_count ?? window.used_messages ?? window.used_amount ?? null,
+      ) ?? undefined
+    );
   }
 
   private static extractLimitValue(window: Record<string, unknown> | null): number | undefined {
@@ -400,7 +412,9 @@ export class UsageService {
         return null;
       }
 
-      const preferred = orgs.find((org) => !Array.isArray(org?.capabilities) || !org.capabilities.includes('api'));
+      const preferred = orgs.find(
+        (org) => !Array.isArray(org?.capabilities) || !org.capabilities.includes('api'),
+      );
       const orgId = this.asString(preferred?.uuid) ?? this.asString(orgs[0]?.uuid);
 
       if (!orgId) {
@@ -412,18 +426,6 @@ export class UsageService {
     } catch {
       return null;
     }
-  }
-
-  private static deriveStatus(percentage: number): 'ok' | 'warning' | 'critical' {
-    if (percentage >= 90) {
-      return 'critical';
-    }
-
-    if (percentage >= 70) {
-      return 'warning';
-    }
-
-    return 'ok';
   }
 
   private static toPct(value: unknown): number {
