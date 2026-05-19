@@ -2,18 +2,26 @@ import React from 'react';
 
 interface UsageCardProps {
   title: string;
-  icon?: string;
+  subtitle?: string;
+  tone?: 'ok' | 'warning' | 'critical';
+  iconSrc?: string;
+  iconAlt?: string;
   children: React.ReactNode;
 }
 
-export const UsageCard: React.FC<UsageCardProps> = ({ title, icon, children }) => {
+export const UsageCard: React.FC<UsageCardProps> = ({ title, subtitle, tone = 'ok', iconSrc, iconAlt, children }) => {
   return (
-    <div className="bg-white p-4 rounded-xl shadow-sm border border-neutral-200 mb-4 w-full text-left">
-      <div className="flex items-center mb-4">
-        {icon && <span className="mr-2 text-xl">{icon}</span>}
-        <h2 className="text-lg font-semibold text-neutral-900">{title}</h2>
-      </div>
-      {children}
-    </div>
+    <section className={`au-card au-card--${tone}`}>
+      <header className="au-card__header">
+        <div className="au-card__head">
+          {iconSrc && <img className="au-brand" src={iconSrc} alt={iconAlt ?? `${title} logo`} />}
+          <div>
+          <h2 className="au-card__title">{title}</h2>
+          {subtitle && <p className="au-card__subtitle">{subtitle}</p>}
+          </div>
+        </div>
+      </header>
+      <div className="au-card__body">{children}</div>
+    </section>
   );
 };

@@ -1,24 +1,22 @@
 import React from 'react';
+import { clampPercent, getUsageTone } from '../../shared/utils';
 
 interface ProgressBarProps {
   percentage: number;
   label: string;
-  color?: string;
 }
 
-export const ProgressBar: React.FC<ProgressBarProps> = ({ percentage, label, color = 'bg-blue-600' }) => {
+export const ProgressBar: React.FC<ProgressBarProps> = ({ percentage, label }) => {
+  const value = clampPercent(percentage);
+  const tone = getUsageTone(value);
+
   return (
-    <div className="mb-4">
-      <div className="flex justify-between mb-1">
-        <span className="text-sm font-medium text-neutral-700">{label}</span>
-        <span className="text-sm font-medium text-neutral-700">{percentage}%</span>
+    <div className="au-progress">
+      <div className="au-progress__row">
+        <span className="au-progress__label">{label}</span>
+        <span className="au-progress__value">{value}%</span>
       </div>
-      <div className="w-full bg-neutral-200 rounded-full h-2.5">
-        <div
-          className={`${color} h-2.5 rounded-full transition-all duration-500`}
-          style={{ width: `${percentage}%` }}
-        ></div>
-      </div>
+      <progress className={`au-progress__meter au-progress__meter--${tone}`} value={value} max={100} />
     </div>
   );
 };
