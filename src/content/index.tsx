@@ -11,11 +11,6 @@ import overlayStyles from './styles/overlay.css?inline';
 
 const HOST_ID = 'ai-usage-claude-overlay-host';
 
-const formatCount = (limit: UsageLimit): string =>
-  typeof limit.used === 'number' && typeof limit.limit === 'number'
-    ? `${limit.used} / ${limit.limit}`
-    : 'Usage';
-
 /** Closest upcoming reset across both windows, as a countdown label. */
 const nextReset = (usage: ClaudeUsage, now: number): string => {
   const upcoming = [usage.session.resetsAt, usage.weekly.resetsAt]
@@ -35,6 +30,8 @@ interface OverlayMetricProps {
 
 const OverlayMetric: React.FC<OverlayMetricProps> = ({ label, limit, now }) => {
   const percent = useMemo(() => Math.round(limit.percentage), [limit.percentage]);
+  const hasCount =
+    typeof limit.used === 'number' && typeof limit.limit === 'number' && limit.limit > 0;
 
   return (
     <div className="aiu-group">
@@ -48,7 +45,15 @@ const OverlayMetric: React.FC<OverlayMetricProps> = ({ label, limit, now }) => {
         max={100}
       />
       <div className="aiu-meta">
-        {formatCount(limit)} · resets {formatReset(limit.resetsAt, now)}
+        {hasCount && (
+          <>
+            <span>
+              {limit.used} / {limit.limit}
+            </span>
+            {' · '}
+          </>
+        )}
+        resets <span>{formatReset(limit.resetsAt, now)}</span>
       </div>
     </div>
   );
@@ -58,7 +63,6 @@ const UsageOverlay: React.FC = () => {
   const [enabled, setEnabled] = useState(true);
   const [usage, setUsage] = useState<ClaudeUsage | null>(null);
   const [collapsed, setCollapsed] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const now = useNow(60_000);
@@ -145,8 +149,6 @@ const UsageOverlay: React.FC = () => {
     });
   }, []);
 
-  const tone = usage?.status ?? 'ok';
-
   if (!enabled) {
     return null;
   }
@@ -167,14 +169,17 @@ const UsageOverlay: React.FC = () => {
           <span className="aiu-tab-label">Claude</span>
         </button>
 
-        <div className={`aiu-card aiu-card--${tone}`}>
+        <div className="aiu-card">
           <div className="aiu-header">
-            <div>
-              <p className="aiu-title">Claude Limits</p>
+            <img className="aiu-brand" src={claudeBrandAsset} alt="" />
+            <div className="aiu-heading">
+              <p className="aiu-title">Claude</p>
               <p className="aiu-subtitle">
-                {usage
-                  ? `updated ${formatRelativeTime(usage.lastUpdated, now)} · resets ${nextReset(usage, now)}`
-                  : 'waiting for snapshot'}
+                {isRefreshing
+                  ? 'refreshing…'
+                  : usage
+                    ? `updated ${formatRelativeTime(usage.lastUpdated, now)} · resets ${nextReset(usage, now)}`
+                    : 'waiting for snapshot'}
               </p>
             </div>
           </div>
@@ -183,24 +188,6 @@ const UsageOverlay: React.FC = () => {
             <>
               <OverlayMetric label="Session · 5h" limit={usage.session} now={now} />
               <OverlayMetric label="Weekly · 7d" limit={usage.weekly} now={now} />
-
-              <div className="aiu-actions">
-                <button
-                  type="button"
-                  className="aiu-details-toggle"
-                  onClick={() => setShowDetails((prev) => !prev)}
-                  aria-expanded={showDetails}
-                >
-                  {showDetails ? 'Hide details' : 'Details'}
-                </button>
-                {isRefreshing && <span className="aiu-refreshing">refreshing…</span>}
-              </div>
-
-              {showDetails && (
-                <pre className="aiu-json">
-                  {JSON.stringify(usage.raw ?? { message: 'No raw payload yet' }, null, 2)}
-                </pre>
-              )}
             </>
           ) : isLoading || isRefreshing ? (
             <div className="aiu-loader" aria-hidden="true">
