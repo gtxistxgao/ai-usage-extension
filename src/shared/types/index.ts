@@ -1,3 +1,7 @@
+export type UsageStatus = 'ok' | 'warning' | 'critical';
+
+export type ProviderId = 'claude' | 'codex';
+
 export interface UsageLimit {
   percentage: number;
   resetsAt: string | null;
@@ -9,7 +13,7 @@ export interface ClaudeUsage {
   plan: string;
   session: UsageLimit;
   weekly: UsageLimit;
-  status: 'ok' | 'warning' | 'critical';
+  status: UsageStatus;
   lastUpdated: number;
   raw?: Record<string, unknown>;
 }
@@ -17,7 +21,7 @@ export interface ClaudeUsage {
 export interface CodexUsage {
   session: UsageLimit;
   weekly: UsageLimit;
-  status: 'ok' | 'warning' | 'critical';
+  status: UsageStatus;
   lastUpdated: number;
   raw?: Record<string, unknown>;
 }
@@ -27,13 +31,17 @@ export interface UsageState {
   codex?: CodexUsage;
 }
 
-export interface ExtensionMessage {
-  type: string;
-  payload?: any;
-}
+/* -------------------------------------------------------------------------- */
+/*  Messaging protocol                                                        */
+/* -------------------------------------------------------------------------- */
 
-export interface MessageResponse {
-  success: boolean;
-  data?: any;
-  error?: string;
-}
+/** Messages sent to the background service worker. */
+export type ExtensionMessage = { type: 'REFRESH_USAGE' };
+
+/** Response returned by the background worker for a given message. */
+export type MessageResponse<T = unknown> =
+  | { success: true; data: T }
+  | { success: false; error: string };
+
+/** Typed response for the `REFRESH_USAGE` message. */
+export type RefreshUsageResponse = MessageResponse<UsageState>;
