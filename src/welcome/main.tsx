@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import WelcomeApp from './WelcomeApp';
-import '@sidepanel/styles/global.css';
+import './styles.css';
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Root container not found');

@@ -1,7 +1,3 @@
 export default function WelcomeApp() {
-  return (
-    <div>
-     welcome
-    </div>
-  );
+  return <main className="welcome-shell">Welcome</main>;
 }
