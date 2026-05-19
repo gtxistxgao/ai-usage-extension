@@ -11,6 +11,7 @@ export interface ClaudeUsage {
   weekly: UsageLimit;
   status: 'ok' | 'warning' | 'critical';
   lastUpdated: number;
+  raw?: Record<string, unknown>;
 }
 
 export interface CodexUsage {
@@ -18,6 +19,7 @@ export interface CodexUsage {
   weekly: UsageLimit;
   status: 'ok' | 'warning' | 'critical';
   lastUpdated: number;
+  raw?: Record<string, unknown>;
 }
 
 export interface UsageState {

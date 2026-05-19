@@ -180,6 +180,7 @@ export class UsageService {
       },
       status: this.deriveStatus(max),
       lastUpdated: Date.now(),
+      raw: data,
     };
   }
 
@@ -220,6 +221,7 @@ export class UsageService {
       },
       status: this.deriveStatus(max),
       lastUpdated: Date.now(),
+      raw: data,
     };
   }
 
