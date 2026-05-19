@@ -1,83 +1,57 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import root from 'react-shadow';
-import { ClaudeUsage, UsageState } from '../shared/types';
-import { clampPercent, getUsageTone, UsageTone } from '../shared/utils';
-import overlayStyles from './styles/overlay.css?inline';
 import claudeBrandAsset from '../assets/brands/claude-anthropic.jpg?inline';
+import { STORAGE_KEYS } from '../shared/constants';
+import { useNow } from '../shared/hooks/useNow';
+import { requestUsageRefresh } from '../shared/messaging';
+import type { ClaudeUsage, UsageLimit, UsageState } from '../shared/types';
+import { formatRelativeTime, formatReset, getUsageTone } from '../shared/utils';
+import overlayStyles from './styles/overlay.css?inline';
 
-const STORAGE_KEY = 'ai_usage_state';
-const OVERLAY_ENABLED_KEY = 'claude_overlay_enabled';
 const HOST_ID = 'ai-usage-claude-overlay-host';
 
+const formatCount = (limit: UsageLimit): string =>
+  typeof limit.used === 'number' && typeof limit.limit === 'number'
+    ? `${limit.used} / ${limit.limit}`
+    : 'Usage';
 
-const formatReset = (resetAt: string | null, now: number): string => {
-  if (!resetAt) {
-    return 'Reset: unknown';
-  }
-
-  const diff = new Date(resetAt).getTime() - now;
-  if (diff <= 0) {
-    return 'Reset: now';
-  }
-
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-  if (hours >= 24) {
-    const days = Math.floor(hours / 24);
-    return `Reset: ${days}d ${hours % 24}h`;
-  }
-
-  if (hours > 0) {
-    return `Reset: ${hours}h ${minutes}m`;
-  }
-
-  return `Reset: ${minutes}m`;
-};
-
-const formatUsageCount = (used?: number, limit?: number): string => {
-  if (typeof used === 'number' && typeof limit === 'number') {
-    return `${used} / ${limit}`;
-  }
-
-  return 'Usage %';
-};
-
-const formatUpdatedAgo = (updatedAt: number, now: number): string => {
-  const diff = Math.max(0, now - updatedAt);
-  const mins = Math.floor(diff / 60_000);
-
-  if (mins < 1) {
-    return 'just now';
-  }
-
-  if (mins < 60) {
-    return `${mins}m ago`;
-  }
-
-  const hours = Math.floor(mins / 60);
-  return `${hours}h ago`;
-};
-
-const toneClass = (percent: number): string => `aiu-meter--${getUsageTone(percent)}`;
-
-const nextResetForOverlay = (usage: ClaudeUsage | null, now: number): string => {
-  if (!usage) {
-    return 'unknown';
-  }
-
-  const next = [usage.session.resetsAt, usage.weekly.resetsAt]
+/** Closest upcoming reset across both windows, as a countdown label. */
+const nextReset = (usage: ClaudeUsage, now: number): string => {
+  const upcoming = [usage.session.resetsAt, usage.weekly.resetsAt]
     .filter((value): value is string => Boolean(value))
     .map((value) => new Date(value).getTime())
     .filter((value) => Number.isFinite(value) && value > now)
     .sort((a, b) => a - b)[0];
 
-  if (!next) {
-    return 'unknown';
-  }
+  return upcoming ? formatReset(new Date(upcoming).toISOString(), now) : 'unknown';
+};
 
-  return formatReset(new Date(next).toISOString(), now);
+interface OverlayMetricProps {
+  label: string;
+  limit: UsageLimit;
+  now: number;
+}
+
+const OverlayMetric: React.FC<OverlayMetricProps> = ({ label, limit, now }) => {
+  const percent = useMemo(() => Math.round(limit.percentage), [limit.percentage]);
+
+  return (
+    <div className="aiu-group">
+      <div className="aiu-row">
+        <span className="aiu-label">{label}</span>
+        <span className="aiu-value">{percent}%</span>
+      </div>
+      <progress
+        className={`aiu-meter aiu-meter--${getUsageTone(percent)}`}
+        value={percent}
+        max={100}
+      />
+      <div className="aiu-meta">
+        {formatCount(limit)} · resets {formatReset(limit.resetsAt, now)}
+      </div>
+    </div>
+  );
 };
 
 const UsageOverlay: React.FC = () => {
@@ -87,61 +61,91 @@ const UsageOverlay: React.FC = () => {
   const [showDetails, setShowDetails] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [now, setNow] = useState(Date.now());
+  const now = useNow(60_000);
 
   useEffect(() => {
-    const load = async (): Promise<void> => {
-      const snapshot = await chrome.storage.local.get([STORAGE_KEY, OVERLAY_ENABLED_KEY]);
-      const usageState = (snapshot[STORAGE_KEY] || {}) as UsageState;
+    let active = true;
+
+    const hydrate = async (): Promise<void> => {
+      const snapshot = await chrome.storage.local.get([
+        STORAGE_KEYS.usageState,
+        STORAGE_KEYS.claudeOverlayEnabled,
+        STORAGE_KEYS.claudeOverlayCollapsed,
+      ]);
+
+      if (!active) {
+        return;
+      }
+
+      const usageState = (snapshot[STORAGE_KEYS.usageState] ?? {}) as UsageState;
       setUsage(usageState.claude ?? null);
-      setEnabled(snapshot[OVERLAY_ENABLED_KEY] !== false);
+      setEnabled(snapshot[STORAGE_KEYS.claudeOverlayEnabled] !== false);
+      setCollapsed(snapshot[STORAGE_KEYS.claudeOverlayCollapsed] === true);
       setIsLoading(false);
     };
 
-    void load();
+    void hydrate();
 
-    const listener = (changes: { [key: string]: chrome.storage.StorageChange }, areaName: string) => {
+    const listener = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string,
+    ): void => {
       if (areaName !== 'local') {
         return;
       }
 
-      if (changes[STORAGE_KEY]) {
-        const nextState = (changes[STORAGE_KEY].newValue || {}) as UsageState;
-        setUsage(nextState.claude ?? null);
+      if (changes[STORAGE_KEYS.usageState]) {
+        const next = (changes[STORAGE_KEYS.usageState].newValue ?? {}) as UsageState;
+        setUsage(next.claude ?? null);
       }
 
-      if (changes[OVERLAY_ENABLED_KEY]) {
-        setEnabled(changes[OVERLAY_ENABLED_KEY].newValue !== false);
+      if (changes[STORAGE_KEYS.claudeOverlayEnabled]) {
+        setEnabled(changes[STORAGE_KEYS.claudeOverlayEnabled].newValue !== false);
+      }
+
+      if (changes[STORAGE_KEYS.claudeOverlayCollapsed]) {
+        setCollapsed(changes[STORAGE_KEYS.claudeOverlayCollapsed].newValue === true);
       }
     };
 
     chrome.storage.onChanged.addListener(listener);
-    return () => chrome.storage.onChanged.removeListener(listener);
+    return () => {
+      active = false;
+      chrome.storage.onChanged.removeListener(listener);
+    };
   }, []);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setNow(Date.now()), 60_000);
-    return () => window.clearInterval(timer);
-  }, []);
+    let active = true;
 
-  useEffect(() => {
     const runRefresh = async (): Promise<void> => {
       setIsRefreshing(true);
       try {
-        await chrome.runtime.sendMessage({ type: 'REFRESH_USAGE' });
+        await requestUsageRefresh();
       } catch {
-        // ignore refresh errors in overlay
+        // The popup surfaces refresh errors; the overlay stays quiet.
       } finally {
-        setIsRefreshing(false);
+        if (active) {
+          setIsRefreshing(false);
+        }
       }
     };
 
     void runRefresh();
+    return () => {
+      active = false;
+    };
   }, []);
 
-  const sessionPercent = useMemo(() => clampPercent(usage?.session.percentage ?? 0), [usage]);
-  const weeklyPercent = useMemo(() => clampPercent(usage?.weekly.percentage ?? 0), [usage]);
-  const tone: UsageTone = usage?.status ?? getUsageTone(Math.max(sessionPercent, weeklyPercent));
+  const toggleCollapsed = useCallback((): void => {
+    setCollapsed((prev) => {
+      const next = !prev;
+      void chrome.storage.local.set({ [STORAGE_KEYS.claudeOverlayCollapsed]: next });
+      return next;
+    });
+  }, []);
+
+  const tone = usage?.status ?? 'ok';
 
   if (!enabled) {
     return null;
@@ -154,11 +158,12 @@ const UsageOverlay: React.FC = () => {
         <button
           type="button"
           className="aiu-tab"
-          onClick={() => setCollapsed((prev) => !prev)}
+          onClick={toggleCollapsed}
           title={collapsed ? 'Show limits' : 'Hide limits'}
           aria-label={collapsed ? 'Show Claude limits' : 'Hide Claude limits'}
+          aria-expanded={!collapsed}
         >
-          <img className="aiu-tab-icon" src={claudeBrandAsset} alt="Claude by Anthropic" />
+          <img className="aiu-tab-icon" src={claudeBrandAsset} alt="" />
           <span className="aiu-tab-label">Claude</span>
         </button>
 
@@ -168,7 +173,7 @@ const UsageOverlay: React.FC = () => {
               <p className="aiu-title">Claude Limits</p>
               <p className="aiu-subtitle">
                 {usage
-                  ? `updated ${formatUpdatedAgo(usage.lastUpdated, now)} · reset ${nextResetForOverlay(usage, now)}`
+                  ? `updated ${formatRelativeTime(usage.lastUpdated, now)} · resets ${nextReset(usage, now)}`
                   : 'waiting for snapshot'}
               </p>
             </div>
@@ -176,36 +181,25 @@ const UsageOverlay: React.FC = () => {
 
           {usage ? (
             <>
-              <div className="aiu-group">
-                <div className="aiu-row">
-                  <span className="aiu-label">Session (5h)</span>
-                  <span className="aiu-value">{sessionPercent}%</span>
-                </div>
-                <progress className={`aiu-meter ${toneClass(sessionPercent)}`} value={sessionPercent} max={100} />
-                <div className="aiu-meta">
-                  {formatUsageCount(usage.session.used, usage.session.limit)} · {formatReset(usage.session.resetsAt, now)}
-                </div>
-              </div>
-
-              <div className="aiu-group">
-                <div className="aiu-row">
-                  <span className="aiu-label">Weekly (7d)</span>
-                  <span className="aiu-value">{weeklyPercent}%</span>
-                </div>
-                <progress className={`aiu-meter ${toneClass(weeklyPercent)}`} value={weeklyPercent} max={100} />
-                <div className="aiu-meta">
-                  {formatUsageCount(usage.weekly.used, usage.weekly.limit)} · {formatReset(usage.weekly.resetsAt, now)}
-                </div>
-              </div>
+              <OverlayMetric label="Session · 5h" limit={usage.session} now={now} />
+              <OverlayMetric label="Weekly · 7d" limit={usage.weekly} now={now} />
 
               <div className="aiu-actions">
-                <button type="button" className="aiu-details-toggle" onClick={() => setShowDetails((prev) => !prev)}>
+                <button
+                  type="button"
+                  className="aiu-details-toggle"
+                  onClick={() => setShowDetails((prev) => !prev)}
+                  aria-expanded={showDetails}
+                >
                   {showDetails ? 'Hide details' : 'Details'}
                 </button>
                 {isRefreshing && <span className="aiu-refreshing">refreshing…</span>}
               </div>
+
               {showDetails && (
-                <pre className="aiu-json">{JSON.stringify(usage.raw ?? { message: 'No raw payload yet' }, null, 2)}</pre>
+                <pre className="aiu-json">
+                  {JSON.stringify(usage.raw ?? { message: 'No raw payload yet' }, null, 2)}
+                </pre>
               )}
             </>
           ) : isLoading || isRefreshing ? (
@@ -215,7 +209,7 @@ const UsageOverlay: React.FC = () => {
               <div className="aiu-loader__line aiu-loader__line--w60" />
             </div>
           ) : (
-            <div className="aiu-empty">No data yet. Refresh in popup.</div>
+            <div className="aiu-empty">No data yet. Open the popup and refresh.</div>
           )}
         </div>
       </div>
@@ -224,8 +218,7 @@ const UsageOverlay: React.FC = () => {
 };
 
 const mount = (): void => {
-  const existing = document.getElementById(HOST_ID);
-  if (existing) {
+  if (document.getElementById(HOST_ID)) {
     return;
   }
 
