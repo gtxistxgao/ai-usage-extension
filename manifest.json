@@ -1,34 +1,20 @@
 {
-	"manifest_version": 3,
-	"name": "Extension Template",
-	"version": "0.1.0",
-	"description": "A clean foundation for building modern Chrome extensions",
-	"permissions": [
-		"storage",
-		"sidePanel",
-		"activeTab"
-	],
-	"background": {
-		"service_worker": "src/background/index.ts",
-		"type": "module"
-	},
-	"side_panel": {
-		"default_path": "src/sidepanel.html"
-	},
-	"content_scripts": [
-		{
-			"matches": [
-				"<all_urls>"
-			],
-			"js": [
-				"src/content/index.tsx"
-			],
-			"all_frames": true
-		}
-	],
-	"icons": {
-		"16": "icons/icon-16.png",
-		"48": "icons/icon-48.png",
-		"128": "icons/icon-128.png"
-	}
+  "manifest_version": 3,
+  "name": "AI Usage Tracker",
+  "version": "0.1.0",
+  "description": "Track AI usage for Claude and Codex",
+  "permissions": ["storage", "sidePanel", "activeTab", "alarms", "cookies"],
+  "host_permissions": ["https://claude.ai/*", "https://chatgpt.com/*", "https://chat.openai.com/*"],
+  "background": {
+    "service_worker": "src/background/index.ts",
+    "type": "module"
+  },
+  "side_panel": {
+    "default_path": "src/sidepanel.html"
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
 }
