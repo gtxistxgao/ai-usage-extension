@@ -15,6 +15,8 @@ interface ProviderCardProps {
   now: number;
   /** Hint shown when the provider has no snapshot yet. */
   emptyHint: string;
+  /** Optional content pinned to the bottom of the card (e.g. a setting). */
+  footer?: React.ReactNode;
 }
 
 const Skeleton: React.FC = () => (
@@ -34,36 +36,30 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
   loading,
   now,
   emptyHint,
+  footer,
 }) => {
-  if (loading) {
-    return (
-      <UsageCard title={title} subtitle="loading snapshot" iconSrc={iconSrc} iconAlt={iconAlt}>
-        <Skeleton />
-      </UsageCard>
-    );
-  }
-
-  if (!usage) {
-    return (
-      <UsageCard title={title} subtitle="not connected" iconSrc={iconSrc} iconAlt={iconAlt}>
-        <p className="au-empty">{emptyHint}</p>
-      </UsageCard>
-    );
-  }
+  const subtitle = loading
+    ? 'loading snapshot'
+    : usage
+      ? `updated ${formatRelativeTime(usage.lastUpdated, now)}`
+      : 'not connected';
 
   return (
-    <UsageCard
-      title={title}
-      subtitle={`updated ${formatRelativeTime(usage.lastUpdated, now)}`}
-      tone={usage.status}
-      iconSrc={iconSrc}
-      iconAlt={iconAlt}
-    >
-      <UsageMetric label="Session · 5h" limit={usage.session} now={now} />
-      <UsageMetric label="Weekly · 7d" limit={usage.weekly} now={now} />
-      {'plan' in usage && usage.plan !== 'unknown' && (
-        <p className="au-footnote">Plan · {usage.plan}</p>
+    <UsageCard title={title} subtitle={subtitle} iconSrc={iconSrc} iconAlt={iconAlt}>
+      {loading ? (
+        <Skeleton />
+      ) : usage ? (
+        <>
+          <UsageMetric label="Session · 5h" limit={usage.session} now={now} />
+          <UsageMetric label="Weekly · 7d" limit={usage.weekly} now={now} />
+          {'plan' in usage && usage.plan !== 'unknown' && (
+            <p className="au-footnote">Plan · {usage.plan}</p>
+          )}
+        </>
+      ) : (
+        <p className="au-empty">{emptyHint}</p>
       )}
+      {footer}
     </UsageCard>
   );
 };

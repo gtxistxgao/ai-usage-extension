@@ -1,7 +1,7 @@
 import claudeBrandAsset from '../assets/brands/claude-anthropic.jpg';
 import codexBrandAsset from '../assets/brands/codex-openai.jpg';
-import { ProviderCard } from './components/ProviderCard';
 import { useNow } from '../shared/hooks/useNow';
+import { ProviderCard } from './components/ProviderCard';
 import { useUsageData } from './hooks/useUsageData';
 import './styles/global.css';
 
@@ -11,6 +11,23 @@ export const App = () => {
   const now = useNow(30_000);
 
   const initialLoading = loading && !usage.claude && !usage.codex;
+
+  const overlayToggle = (
+    <div className="au-overlay">
+      <div>
+        <p className="au-overlay__label">Overlay on claude.ai</p>
+        <p className="au-overlay__hint">Show the usage capsule on the page</p>
+      </div>
+      <label className="au-switch" aria-label="Toggle Claude overlay">
+        <input
+          type="checkbox"
+          checked={overlayEnabled}
+          onChange={(event) => setOverlayEnabled(event.target.checked)}
+        />
+        <span className="au-switch__slider" />
+      </label>
+    </div>
+  );
 
   return (
     <main className="au-shell">
@@ -36,21 +53,6 @@ export const App = () => {
         </p>
       )}
 
-      <section className="au-toggle">
-        <div className="au-toggle__text">
-          <p className="au-toggle__label">Claude overlay</p>
-          <p className="au-toggle__hint">On-page capsule in claude.ai</p>
-        </div>
-        <label className="au-switch" aria-label="Toggle Claude overlay">
-          <input
-            type="checkbox"
-            checked={overlayEnabled}
-            onChange={(event) => setOverlayEnabled(event.target.checked)}
-          />
-          <span className="au-switch__slider" />
-        </label>
-      </section>
-
       <div className="au-cards">
         <ProviderCard
           title="Claude"
@@ -60,6 +62,7 @@ export const App = () => {
           loading={initialLoading}
           now={now}
           emptyHint="No data yet. Open claude.ai while signed in, then refresh."
+          footer={overlayToggle}
         />
         <ProviderCard
           title="Codex"

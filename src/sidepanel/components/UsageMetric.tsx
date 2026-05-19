@@ -11,7 +11,8 @@ interface UsageMetricProps {
 
 /** A labelled progress bar plus its "used / limit · resets" caption. */
 export const UsageMetric: React.FC<UsageMetricProps> = ({ label, limit, now }) => {
-  const hasCount = typeof limit.used === 'number' && typeof limit.limit === 'number';
+  const hasCount =
+    typeof limit.used === 'number' && typeof limit.limit === 'number' && limit.limit > 0;
 
   return (
     <div className="au-metric">
@@ -19,7 +20,10 @@ export const UsageMetric: React.FC<UsageMetricProps> = ({ label, limit, now }) =
       <p className="au-meta">
         {hasCount && (
           <>
-            <span>{limit.used}</span> / {limit.limit} ·{' '}
+            <span>
+              {limit.used} / {limit.limit}
+            </span>
+            {' · '}
           </>
         )}
         resets <span>{formatReset(limit.resetsAt, now)}</span>
