@@ -1,7 +1,7 @@
 {
-	"name": "extension-template-ai",
+	"name": "ai-usage-tracker",
 	"version": "0.1.0",
-	"description": "A robust template for building modern Chrome extensions",
+	"description": "Chrome extension that tracks Claude and Codex usage limits (session and weekly).",
 	"license": "MIT",
 	"author": "",
 	"repository": {
@@ -13,8 +13,10 @@
 		"mv3",
 		"react",
 		"typescript",
-		"template",
-		"vite"
+		"vite",
+		"claude",
+		"codex",
+		"usage-tracker"
 	],
 	"engines": {
 		"node": ">=20.0.0"
@@ -33,10 +35,7 @@
 	"dependencies": {
 		"react": "^19.2.4",
 		"react-dom": "^19.2.4",
-		"react-markdown": "^10.1.0",
-		"react-shadow": "^20.6.0",
-		"rehype-highlight": "^7.0.2",
-		"remark-gfm": "^4.0.1"
+		"react-shadow": "^20.6.0"
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.39.2",
@@ -45,7 +44,6 @@
 		"@types/node": "^25.2.3",
 		"@types/react": "^19.2.13",
 		"@types/react-dom": "^19.2.3",
-		"@types/webextension-polyfill": "^0.12.4",
 		"@vitejs/plugin-react": "^4.7.0",
 		"autoprefixer": "^10.4.24",
 		"eslint": "^9.39.2",
@@ -57,7 +55,6 @@
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.55.0",
 		"vite": "^5.4.21",
-		"vite-plugin-web-extension": "^4.5.0",
-		"webextension-polyfill": "^0.12.0"
+		"vite-plugin-web-extension": "^4.5.0"
 	}
 }

@@ -1,5 +1,5 @@
 export default {
-	content: ['./src/**/*.{ts,tsx}', './sidepanel.html'],
+	content: ['./src/**/*.{ts,tsx,html}'],
 	theme: {
 		extend: {
 			colors: {
