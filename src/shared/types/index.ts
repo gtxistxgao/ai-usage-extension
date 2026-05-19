@@ -1,3 +1,30 @@
+export interface UsageLimit {
+  percentage: number;
+  resetsAt: string | null;
+  used?: number;
+  limit?: number;
+}
+
+export interface ClaudeUsage {
+  plan: string;
+  session: UsageLimit;
+  weekly: UsageLimit;
+  status: 'ok' | 'warning' | 'critical';
+  lastUpdated: number;
+}
+
+export interface CodexUsage {
+  session: UsageLimit;
+  weekly: UsageLimit;
+  status: 'ok' | 'warning' | 'critical';
+  lastUpdated: number;
+}
+
+export interface UsageState {
+  claude?: ClaudeUsage;
+  codex?: CodexUsage;
+}
+
 export interface ExtensionMessage {
   type: string;
   payload?: any;

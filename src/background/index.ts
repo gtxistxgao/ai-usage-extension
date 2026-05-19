@@ -1,19 +1,29 @@
-import { ExtensionMessage } from '@shared/types';
+import { UsageService } from './services/UsageService';
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Extension installed');
+  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true }).catch(() => undefined);
+  chrome.alarms.create('refreshUsage', { periodInMinutes: 5 });
+  UsageService.refreshAllUsage().catch(() => undefined);
 });
 
-chrome.runtime.onMessage.addListener((
-  message: ExtensionMessage,
-  _sender,
-  sendResponse
-) => {
-  console.log('Message received in background:', message);
-
-  if (message.type === 'PING') {
-    sendResponse({ success: true, data: 'PONG' });
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === 'refreshUsage') {
+    UsageService.refreshAllUsage().catch(() => undefined);
   }
+});
+
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message.type !== 'REFRESH_USAGE') {
+    return;
+  }
+
+  UsageService.refreshAllUsage()
+    .then((state) => {
+      sendResponse({ success: true, data: state });
+    })
+    .catch((error: unknown) => {
+      sendResponse({ success: false, error: error instanceof Error ? error.message : 'refresh_failed' });
+    });
 
   return true;
 });
