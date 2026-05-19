@@ -39,11 +39,16 @@ const OverlayMetric: React.FC<OverlayMetricProps> = ({ label, limit, now }) => {
         <span className="aiu-label">{label}</span>
         <span className="aiu-value">{percent}%</span>
       </div>
-      <progress
+      <div
         className={`aiu-meter aiu-meter--${getUsageTone(percent)}`}
-        value={percent}
-        max={100}
-      />
+        role="progressbar"
+        aria-label={label}
+        aria-valuenow={percent}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
+        <div className="aiu-meter__fill" style={{ width: `${percent}%` }} />
+      </div>
       <div className="aiu-meta">
         {hasCount && (
           <>
