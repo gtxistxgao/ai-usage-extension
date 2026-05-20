@@ -9,25 +9,12 @@ const BADGE_COLORS: Record<ReturnType<typeof getUsageTone>, string> = {
   critical: '#ff3366',
 };
 
-let cachedLogoBitmap: ImageBitmap | null = null;
-
-const getLogoBitmap = async (): Promise<ImageBitmap | null> => {
-  if (cachedLogoBitmap) {
-    return cachedLogoBitmap;
-  }
-  try {
-    const response = await fetch(chrome.runtime.getURL('icons/icon-128.png'));
-    const blob = await response.blob();
-    cachedLogoBitmap = await createImageBitmap(blob);
-    return cachedLogoBitmap;
-  } catch {
-    return null;
-  }
-};
-
 const updateIcon = async (state: UsageState): Promise<void> => {
-  const hasClaude = Boolean(state.claude);
-  const hasCodex = Boolean(state.codex);
+  const claudeSession = state.claude?.session.percentage;
+  const codexSession = state.codex?.session.percentage;
+
+  const hasClaude = typeof claudeSession === 'number';
+  const hasCodex = typeof codexSession === 'number';
 
   if (!hasClaude && !hasCodex) {
     void chrome.action.setBadgeText({ text: '' });
@@ -41,81 +28,36 @@ const updateIcon = async (state: UsageState): Promise<void> => {
     return;
   }
 
-  void chrome.action.setBadgeText({ text: '' });
+  void chrome.action.setIcon({
+    path: {
+      '16': 'icons/icon-16.png',
+      '48': 'icons/icon-48.png',
+      '128': 'icons/icon-128.png',
+    },
+  });
 
-  const canvas = new OffscreenCanvas(32, 32);
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    return;
+  const claudeStr = hasClaude ? Math.min(99, Math.round(claudeSession)).toString() : '--';
+  const codexStr = hasCodex ? Math.min(99, Math.round(codexSession)).toString() : '--';
+  const text = `${claudeStr}|${codexStr}`;
+
+  void chrome.action.setBadgeText({ text });
+
+  const tones: ReturnType<typeof getUsageTone>[] = [];
+  if (hasClaude) {
+    tones.push(getUsageTone(claudeSession));
+  }
+  if (hasCodex) {
+    tones.push(getUsageTone(codexSession));
   }
 
-  ctx.clearRect(0, 0, 32, 32);
-
-  const logoBitmap = await getLogoBitmap();
-  if (logoBitmap) {
-    ctx.drawImage(logoBitmap, 0, 0, 32, 32);
+  let highestTone: ReturnType<typeof getUsageTone> = 'ok';
+  if (tones.includes('critical')) {
+    highestTone = 'critical';
+  } else if (tones.includes('warning')) {
+    highestTone = 'warning';
   }
 
-  const cx = 16;
-  const cy = 16;
-  const radius = 14;
-  const strokeWidth = 2.5;
-
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-  ctx.lineWidth = strokeWidth;
-  ctx.lineCap = 'round';
-
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius, (2 / 3) * Math.PI, (4 / 3) * Math.PI);
-  ctx.stroke();
-
-  ctx.beginPath();
-  ctx.arc(cx, cy, radius, -(1 / 3) * Math.PI, (1 / 3) * Math.PI);
-  ctx.stroke();
-
-  const claudeSession = state.claude?.session.percentage ?? 0;
-  const claudeTone = getUsageTone(claudeSession);
-  const claudeColor = BADGE_COLORS[claudeTone];
-
-  if (hasClaude && claudeSession > 0) {
-    ctx.strokeStyle = claudeColor;
-    ctx.shadowColor = claudeColor;
-    ctx.shadowBlur = 3;
-    ctx.beginPath();
-    ctx.arc(
-      cx,
-      cy,
-      radius,
-      (2 / 3) * Math.PI,
-      (2 / 3) * Math.PI + ((2 / 3) * Math.PI * claudeSession) / 100
-    );
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-  }
-
-  const codexSession = state.codex?.session.percentage ?? 0;
-  const codexTone = getUsageTone(codexSession);
-  const codexColor = BADGE_COLORS[codexTone];
-
-  if (hasCodex && codexSession > 0) {
-    ctx.strokeStyle = codexColor;
-    ctx.shadowColor = codexColor;
-    ctx.shadowBlur = 3;
-    ctx.beginPath();
-    ctx.arc(
-      cx,
-      cy,
-      radius,
-      (1 / 3) * Math.PI,
-      (1 / 3) * Math.PI - ((2 / 3) * Math.PI * codexSession) / 100,
-      true
-    );
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-  }
-
-  const imageData = ctx.getImageData(0, 0, 32, 32);
-  void chrome.action.setIcon({ imageData: { '32': imageData } });
+  void chrome.action.setBadgeBackgroundColor({ color: BADGE_COLORS[highestTone] });
 };
 
 const refreshUsage = async (): Promise<UsageState> => {
