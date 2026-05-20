@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import claudeBrandAsset from '../assets/brands/claude-anthropic.jpg?inline';
 import codexBrandAsset from '../assets/brands/codex-openai.jpg?inline';
+import limitBrandAsset from '../../public/icons/limit-icon-2.0.png?inline';
 import { STORAGE_KEYS } from '../shared/constants';
 import { useNow } from '../shared/hooks/useNow';
 import { requestUsageRefresh } from '../shared/messaging';
@@ -191,11 +192,11 @@ const UsageOverlay: React.FC = () => {
           className="aiu-tab"
           onClick={toggleCollapsed}
           title={collapsed ? 'Show limits' : 'Hide limits'}
-          aria-label={collapsed ? `Show ${title} limits` : `Hide ${title} limits`}
+          aria-label={collapsed ? 'Show limits' : 'Hide limits'}
           aria-expanded={!collapsed}
         >
-          <img className="aiu-tab-icon" src={brandAsset} alt="" />
-          <span className="aiu-tab-label">{title}</span>
+          <img className="aiu-tab-icon" src={limitBrandAsset} alt="" />
+          <span className="aiu-tab-label">LIMITS</span>
         </button>
 
         <div className="aiu-card">
