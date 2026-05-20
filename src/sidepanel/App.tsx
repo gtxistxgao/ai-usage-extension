@@ -6,13 +6,22 @@ import { useUsageData } from './hooks/useUsageData';
 import './styles/global.css';
 
 export const App = () => {
-  const { usage, overlayEnabled, loading, refreshing, error, refresh, setOverlayEnabled } =
-    useUsageData();
+  const {
+    usage,
+    claudeOverlayEnabled,
+    codexOverlayEnabled,
+    loading,
+    refreshing,
+    error,
+    refresh,
+    setClaudeOverlayEnabled,
+    setCodexOverlayEnabled,
+  } = useUsageData();
   const now = useNow(30_000);
 
   const initialLoading = loading && !usage.claude && !usage.codex;
 
-  const overlayToggle = (
+  const claudeOverlayToggle = (
     <div className="au-overlay">
       <div>
         <p className="au-overlay__label">Overlay on claude.ai</p>
@@ -21,8 +30,25 @@ export const App = () => {
       <label className="au-switch" aria-label="Toggle Claude overlay">
         <input
           type="checkbox"
-          checked={overlayEnabled}
-          onChange={(event) => setOverlayEnabled(event.target.checked)}
+          checked={claudeOverlayEnabled}
+          onChange={(event) => setClaudeOverlayEnabled(event.target.checked)}
+        />
+        <span className="au-switch__slider" />
+      </label>
+    </div>
+  );
+
+  const codexOverlayToggle = (
+    <div className="au-overlay">
+      <div>
+        <p className="au-overlay__label">Overlay on chatgpt.com</p>
+        <p className="au-overlay__hint">Show the usage capsule on the page</p>
+      </div>
+      <label className="au-switch" aria-label="Toggle Codex overlay">
+        <input
+          type="checkbox"
+          checked={codexOverlayEnabled}
+          onChange={(event) => setCodexOverlayEnabled(event.target.checked)}
         />
         <span className="au-switch__slider" />
       </label>
@@ -62,7 +88,7 @@ export const App = () => {
           loading={initialLoading}
           now={now}
           emptyHint="No data yet. Open claude.ai while signed in, then refresh."
-          footer={overlayToggle}
+          footer={claudeOverlayToggle}
         />
         <ProviderCard
           title="Codex"
@@ -72,6 +98,7 @@ export const App = () => {
           loading={initialLoading}
           now={now}
           emptyHint="No data yet. Open chatgpt.com while signed in, then refresh."
+          footer={codexOverlayToggle}
         />
       </div>
     </main>

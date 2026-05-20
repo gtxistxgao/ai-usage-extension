@@ -12,6 +12,8 @@ export const STORAGE_KEYS = {
   claudeOverlayEnabled: 'claude_overlay_enabled',
   /** Whether the on-page overlay is collapsed into its side tab. */
   claudeOverlayCollapsed: 'claude_overlay_collapsed',
+  codexOverlayEnabled: 'codex_overlay_enabled',
+  codexOverlayCollapsed: 'codex_overlay_collapsed',
 } as const;
 
 /** Name of the recurring alarm that refreshes usage in the background. */

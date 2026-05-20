@@ -4,30 +4,21 @@ import { readUsageState, requestUsageRefresh } from '../../shared/messaging';
 import type { UsageState } from '../../shared/types';
 
 export interface UsageData {
-  /** Latest usage snapshot, kept in sync with `chrome.storage`. */
   usage: UsageState;
-  /** Whether the on-page Claude overlay is enabled. */
-  overlayEnabled: boolean;
-  /** True until the first snapshot has been read from storage. */
+  claudeOverlayEnabled: boolean;
+  codexOverlayEnabled: boolean;
   loading: boolean;
-  /** True while a manual refresh round-trip is in flight. */
   refreshing: boolean;
-  /** Human-readable error from the last refresh attempt, if any. */
   error: string | null;
-  /** Trigger a background refresh of every provider. */
   refresh: () => Promise<void>;
-  /** Toggle the on-page Claude overlay. */
-  setOverlayEnabled: (enabled: boolean) => void;
+  setClaudeOverlayEnabled: (enabled: boolean) => void;
+  setCodexOverlayEnabled: (enabled: boolean) => void;
 }
 
-/**
- * Owns all sidepanel data: the usage snapshot, the overlay preference,
- * and the loading / refreshing / error lifecycle. The snapshot stays live
- * by subscribing to `chrome.storage` changes from the background worker.
- */
 export const useUsageData = (): UsageData => {
   const [usage, setUsage] = useState<UsageState>({});
-  const [overlayEnabled, setOverlayState] = useState(true);
+  const [claudeOverlayEnabled, setClaudeOverlayState] = useState(true);
+  const [codexOverlayEnabled, setCodexOverlayState] = useState(true);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +29,10 @@ export const useUsageData = (): UsageData => {
     const hydrate = async (): Promise<void> => {
       const [state, settings] = await Promise.all([
         readUsageState(),
-        chrome.storage.local.get(STORAGE_KEYS.claudeOverlayEnabled),
+        chrome.storage.local.get([
+          STORAGE_KEYS.claudeOverlayEnabled,
+          STORAGE_KEYS.codexOverlayEnabled,
+        ]),
       ]);
 
       if (!active) {
@@ -46,7 +40,8 @@ export const useUsageData = (): UsageData => {
       }
 
       setUsage(state);
-      setOverlayState(settings[STORAGE_KEYS.claudeOverlayEnabled] !== false);
+      setClaudeOverlayState(settings[STORAGE_KEYS.claudeOverlayEnabled] !== false);
+      setCodexOverlayState(settings[STORAGE_KEYS.codexOverlayEnabled] !== false);
       setLoading(false);
     };
 
@@ -65,7 +60,11 @@ export const useUsageData = (): UsageData => {
       }
 
       if (changes[STORAGE_KEYS.claudeOverlayEnabled]) {
-        setOverlayState(changes[STORAGE_KEYS.claudeOverlayEnabled].newValue !== false);
+        setClaudeOverlayState(changes[STORAGE_KEYS.claudeOverlayEnabled].newValue !== false);
+      }
+
+      if (changes[STORAGE_KEYS.codexOverlayEnabled]) {
+        setCodexOverlayState(changes[STORAGE_KEYS.codexOverlayEnabled].newValue !== false);
       }
     };
 
@@ -88,10 +87,25 @@ export const useUsageData = (): UsageData => {
     }
   }, []);
 
-  const setOverlayEnabled = useCallback((enabled: boolean): void => {
-    setOverlayState(enabled);
+  const setClaudeOverlayEnabled = useCallback((enabled: boolean): void => {
+    setClaudeOverlayState(enabled);
     void chrome.storage.local.set({ [STORAGE_KEYS.claudeOverlayEnabled]: enabled });
   }, []);
 
-  return { usage, overlayEnabled, loading, refreshing, error, refresh, setOverlayEnabled };
+  const setCodexOverlayEnabled = useCallback((enabled: boolean): void => {
+    setCodexOverlayState(enabled);
+    void chrome.storage.local.set({ [STORAGE_KEYS.codexOverlayEnabled]: enabled });
+  }, []);
+
+  return {
+    usage,
+    claudeOverlayEnabled,
+    codexOverlayEnabled,
+    loading,
+    refreshing,
+    error,
+    refresh,
+    setClaudeOverlayEnabled,
+    setCodexOverlayEnabled,
+  };
 };
