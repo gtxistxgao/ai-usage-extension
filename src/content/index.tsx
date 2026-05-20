@@ -75,7 +75,7 @@ const usageField = isClaude ? 'claude' : 'codex';
 const brandAsset = isClaude ? claudeBrandAsset : codexBrandAsset;
 const title = isClaude ? 'Claude' : 'Codex';
 const inputSelector = isClaude
-  ? '#chat-input-file-upload-onpage, [data-testid="chat-input"]'
+  ? '#chat-input-file-upload-onpage, #chat-input-file-upload-epitaxy, [data-surface="prompt"], [data-testid="chat-input"]'
   : '#prompt-textarea, [data-testid="composer-footer-actions"], [data-testid="chat-input"]';
 
 const UsageOverlay: React.FC = () => {
