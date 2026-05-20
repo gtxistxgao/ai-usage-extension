@@ -240,3 +240,47 @@
     animation: none;
   }
 }
+
+.aiu-btn-refresh {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  padding: 6px;
+  cursor: pointer;
+  color: var(--aiu-muted);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.aiu-btn-refresh:hover:not(:disabled) {
+  background: var(--aiu-line);
+  color: var(--aiu-text);
+}
+
+.aiu-btn-refresh:disabled {
+  cursor: default;
+  color: var(--aiu-faint);
+}
+
+.aiu-icon-refresh {
+  width: 14px;
+  height: 14px;
+}
+
+.aiu-btn-refresh--spin .aiu-icon-refresh {
+  animation: aiu-spin 1s linear infinite;
+}
+
+@keyframes aiu-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

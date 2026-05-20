@@ -157,27 +157,19 @@ const UsageOverlay: React.FC = () => {
     };
   }, []);
 
-  useEffect(() => {
-    let active = true;
-
-    const runRefresh = async (): Promise<void> => {
-      setIsRefreshing(true);
-      try {
-        await requestUsageRefresh();
-      } catch {
-        // The popup surfaces refresh errors; the overlay stays quiet.
-      } finally {
-        if (active) {
-          setIsRefreshing(false);
-        }
-      }
-    };
-
-    void runRefresh();
-    return () => {
-      active = false;
-    };
+  const runRefresh = useCallback(async (): Promise<void> => {
+    setIsRefreshing(true);
+    try {
+      await requestUsageRefresh();
+    } catch {
+    } finally {
+      setIsRefreshing(false);
+    }
   }, []);
+
+  useEffect(() => {
+    void runRefresh();
+  }, [runRefresh]);
 
   const toggleCollapsed = useCallback((): void => {
     setCollapsed((prev) => {
@@ -219,6 +211,27 @@ const UsageOverlay: React.FC = () => {
                     : 'waiting for snapshot'}
               </p>
             </div>
+            <button
+              type="button"
+              className={`aiu-btn-refresh ${isRefreshing ? 'aiu-btn-refresh--spin' : ''}`}
+              onClick={runRefresh}
+              disabled={isRefreshing}
+              title="Refresh usage limits"
+              aria-label="Refresh usage limits"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="aiu-icon-refresh"
+              >
+                <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                <polyline points="21 3 21 8 16 8" />
+              </svg>
+            </button>
           </div>
 
           {usage ? (
@@ -245,7 +258,7 @@ let hostRef: HTMLDivElement | null = null;
 let rootRef: ReturnType<typeof createRoot> | null = null;
 
 const attachHost = (): void => {
-  const target = document.body ?? document.documentElement;
+  const target = document.documentElement;
   if (!target) {
     setTimeout(attachHost, 50);
     return;

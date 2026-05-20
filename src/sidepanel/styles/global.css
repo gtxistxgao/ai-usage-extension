@@ -39,6 +39,16 @@ body,
   color: var(--au-text);
 }
 
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+
+html,
+body {
+  scrollbar-width: none;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -79,47 +89,47 @@ input {
   letter-spacing: -0.01em;
 }
 
-.au-refresh {
+.au-btn-refresh {
   border: 1px solid var(--au-line);
   background: transparent;
   color: var(--au-text-muted);
   border-radius: 8px;
-  padding: 7px 12px;
-  font-size: 12px;
-  line-height: 1;
+  padding: 8px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition:
     border-color 120ms ease,
     color 120ms ease;
 }
 
-.au-refresh:hover:not(:disabled) {
+.au-btn-refresh:hover:not(:disabled) {
   border-color: var(--au-line-strong);
   color: var(--au-text);
 }
 
-.au-refresh:disabled {
+.au-btn-refresh:disabled {
   cursor: default;
   color: var(--au-text-faint);
 }
 
-.au-refresh--loading {
-  position: relative;
-  padding-left: 27px;
+.au-icon-refresh {
+  width: 14px;
+  height: 14px;
 }
 
-.au-refresh--loading::before {
-  content: '';
-  position: absolute;
-  left: 11px;
-  top: 50%;
-  width: 9px;
-  height: 9px;
-  margin-top: -5px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
-  border-top-color: var(--au-text);
-  animation: au-spin 0.7s linear infinite;
+.au-btn-refresh--spin .au-icon-refresh {
+  animation: au-spin 1s linear infinite;
+}
+
+@keyframes au-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---- Error ---------------------------------------------------------- */
@@ -138,27 +148,26 @@ input {
 
 /* ---- In-card overlay toggle ---------------------------------------- */
 
-.au-overlay {
+.au-global-controls {
+  border: 1px solid var(--au-line);
+  border-radius: 12px;
+  background: var(--au-surface);
+  padding: 8px 12px;
+  margin-bottom: 4px;
+}
+
+.au-overlay-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 2px;
-  padding-top: 14px;
-  border-top: 1px solid var(--au-line);
 }
 
-.au-overlay__label {
+.au-overlay-toggle__label {
   margin: 0;
-  font-size: 12px;
-  font-weight: 550;
+  font-size: 13px;
+  font-weight: 555;
   color: var(--au-text);
-}
-
-.au-overlay__hint {
-  margin: 3px 0 0;
-  font-size: 11px;
-  color: var(--au-text-muted);
 }
 
 .au-switch {

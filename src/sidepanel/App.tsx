@@ -21,40 +21,6 @@ export const App = () => {
 
   const initialLoading = loading && !usage.claude && !usage.codex;
 
-  const claudeOverlayToggle = (
-    <div className="au-overlay">
-      <div>
-        <p className="au-overlay__label">Overlay on claude.ai</p>
-        <p className="au-overlay__hint">Show the usage capsule on the page</p>
-      </div>
-      <label className="au-switch" aria-label="Toggle Claude overlay">
-        <input
-          type="checkbox"
-          checked={claudeOverlayEnabled}
-          onChange={(event) => setClaudeOverlayEnabled(event.target.checked)}
-        />
-        <span className="au-switch__slider" />
-      </label>
-    </div>
-  );
-
-  const codexOverlayToggle = (
-    <div className="au-overlay">
-      <div>
-        <p className="au-overlay__label">Overlay on chatgpt.com</p>
-        <p className="au-overlay__hint">Show the usage capsule on the page</p>
-      </div>
-      <label className="au-switch" aria-label="Toggle Codex overlay">
-        <input
-          type="checkbox"
-          checked={codexOverlayEnabled}
-          onChange={(event) => setCodexOverlayEnabled(event.target.checked)}
-        />
-        <span className="au-switch__slider" />
-      </label>
-    </div>
-  );
-
   return (
     <main className="au-shell">
       <header className="au-topbar">
@@ -66,10 +32,22 @@ export const App = () => {
           type="button"
           onClick={() => void refresh()}
           disabled={refreshing}
-          className={`au-refresh ${refreshing ? 'au-refresh--loading' : ''}`}
+          className={`au-btn-refresh ${refreshing ? 'au-btn-refresh--spin' : ''}`}
           title="Refresh usage"
+          aria-label="Refresh usage"
         >
-          {refreshing ? 'Refreshing' : 'Refresh'}
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="au-icon-refresh"
+          >
+            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+            <polyline points="21 3 21 8 16 8" />
+          </svg>
         </button>
       </header>
 
@@ -78,6 +56,24 @@ export const App = () => {
           Couldn’t refresh — {error}
         </p>
       )}
+
+      <div className="au-global-controls">
+        <div className="au-overlay-toggle">
+          <p className="au-overlay-toggle__label">On-Page Overlays</p>
+          <label className="au-switch" aria-label="Toggle on-page overlays">
+            <input
+              type="checkbox"
+              checked={claudeOverlayEnabled || codexOverlayEnabled}
+              onChange={(event) => {
+                const checked = event.target.checked;
+                setClaudeOverlayEnabled(checked);
+                setCodexOverlayEnabled(checked);
+              }}
+            />
+            <span className="au-switch__slider" />
+          </label>
+        </div>
+      </div>
 
       <div className="au-cards">
         <ProviderCard
@@ -88,7 +84,6 @@ export const App = () => {
           loading={initialLoading}
           now={now}
           emptyHint="No data yet. Open claude.ai while signed in, then refresh."
-          footer={claudeOverlayToggle}
         />
         <ProviderCard
           title="Codex"
@@ -98,7 +93,6 @@ export const App = () => {
           loading={initialLoading}
           now={now}
           emptyHint="No data yet. Open chatgpt.com while signed in, then refresh."
-          footer={codexOverlayToggle}
         />
       </div>
     </main>
