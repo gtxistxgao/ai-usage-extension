@@ -4,9 +4,9 @@ import { getUsageTone } from '../shared/utils';
 import { UsageService } from './services/UsageService';
 
 const BADGE_COLORS: Record<ReturnType<typeof getUsageTone>, string> = {
-  ok: '#4b8af5',
-  warning: '#e69138',
-  critical: '#e0533f',
+  ok: '#8752FA',
+  warning: '#CD83FF',
+  critical: '#ff3366',
 };
 
 let cachedLogoBitmap: ImageBitmap | null = null;
@@ -56,40 +56,62 @@ const updateIcon = async (state: UsageState): Promise<void> => {
     ctx.drawImage(logoBitmap, 0, 0, 32, 32);
   }
 
-  const trackColor = 'rgba(128, 128, 128, 0.3)';
+  const cx = 16;
+  const cy = 16;
+  const radius = 14;
+  const strokeWidth = 2.5;
+
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+  ctx.lineWidth = strokeWidth;
+  ctx.lineCap = 'round';
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, (2 / 3) * Math.PI, (4 / 3) * Math.PI);
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, -(1 / 3) * Math.PI, (1 / 3) * Math.PI);
+  ctx.stroke();
 
   const claudeSession = state.claude?.session.percentage ?? 0;
   const claudeTone = getUsageTone(claudeSession);
   const claudeColor = BADGE_COLORS[claudeTone];
-  const claudeHeight = Math.round(24 * (claudeSession / 100));
 
-  ctx.fillStyle = trackColor;
-  ctx.beginPath();
-  ctx.roundRect(2, 4, 3, 24, 1);
-  ctx.fill();
-
-  if (hasClaude && claudeHeight > 0) {
-    ctx.fillStyle = claudeColor;
+  if (hasClaude && claudeSession > 0) {
+    ctx.strokeStyle = claudeColor;
+    ctx.shadowColor = claudeColor;
+    ctx.shadowBlur = 3;
     ctx.beginPath();
-    ctx.roundRect(2, 28 - claudeHeight, 3, claudeHeight, 1);
-    ctx.fill();
+    ctx.arc(
+      cx,
+      cy,
+      radius,
+      (2 / 3) * Math.PI,
+      (2 / 3) * Math.PI + ((2 / 3) * Math.PI * claudeSession) / 100
+    );
+    ctx.stroke();
+    ctx.shadowBlur = 0;
   }
 
   const codexSession = state.codex?.session.percentage ?? 0;
   const codexTone = getUsageTone(codexSession);
   const codexColor = BADGE_COLORS[codexTone];
-  const codexHeight = Math.round(24 * (codexSession / 100));
 
-  ctx.fillStyle = trackColor;
-  ctx.beginPath();
-  ctx.roundRect(27, 4, 3, 24, 1);
-  ctx.fill();
-
-  if (hasCodex && codexHeight > 0) {
-    ctx.fillStyle = codexColor;
+  if (hasCodex && codexSession > 0) {
+    ctx.strokeStyle = codexColor;
+    ctx.shadowColor = codexColor;
+    ctx.shadowBlur = 3;
     ctx.beginPath();
-    ctx.roundRect(27, 28 - codexHeight, 3, codexHeight, 1);
-    ctx.fill();
+    ctx.arc(
+      cx,
+      cy,
+      radius,
+      (1 / 3) * Math.PI,
+      (1 / 3) * Math.PI - ((2 / 3) * Math.PI * codexSession) / 100,
+      true
+    );
+    ctx.stroke();
+    ctx.shadowBlur = 0;
   }
 
   const imageData = ctx.getImageData(0, 0, 32, 32);

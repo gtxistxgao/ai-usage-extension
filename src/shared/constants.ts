@@ -24,6 +24,6 @@ export const REFRESH_INTERVAL_MINUTES = 5;
 
 /** Percentage thresholds that drive the ok / warning / critical tone. */
 export const USAGE_THRESHOLDS = {
-  warning: 70,
-  critical: 90,
+  warning: 75,
+  critical: 92,
 } as const;
