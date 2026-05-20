@@ -82,7 +82,7 @@ const inputSelector = isClaude
 const UsageOverlay: React.FC = () => {
   const [enabled, setEnabled] = useState(true);
   const [usage, setUsage] = useState<ClaudeUsage | CodexUsage | null>(null);
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [hasInput, setHasInput] = useState(false);
@@ -123,7 +123,7 @@ const UsageOverlay: React.FC = () => {
       const usageState = (snapshot[STORAGE_KEYS.usageState] ?? {}) as UsageState;
       setUsage(usageState[usageField] ?? null);
       setEnabled(snapshot[enabledKey] !== false);
-      setCollapsed(snapshot[collapsedKey] === true);
+      setCollapsed(snapshot[collapsedKey] !== false);
       setIsLoading(false);
     };
 
@@ -147,7 +147,7 @@ const UsageOverlay: React.FC = () => {
       }
 
       if (changes[collapsedKey]) {
-        setCollapsed(changes[collapsedKey].newValue === true);
+        setCollapsed(changes[collapsedKey].newValue !== false);
       }
     };
 
