@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "AI Usage Tracker",
   "version": "0.1.0",
-  "description": "Track AI usage for Claude and Codex",
+  "description": "Track Claude and ChatGPT (Codex) session & weekly usage limits at a glance in a popup and on-page overlay. Privacy-first, no setup.",
   "permissions": ["storage", "alarms", "cookies"],
   "host_permissions": ["https://claude.ai/*", "https://chatgpt.com/*", "https://chat.openai.com/*"],
   "background": {

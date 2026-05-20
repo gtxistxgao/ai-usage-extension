@@ -13,7 +13,7 @@ AI Usage Tracker — Claude & Codex Limits
 
 ## Short Description
 
-Track Claude and Codex session and weekly usage limits at a glance — in your toolbar, in a popup, and right on the page.
+Track Claude and ChatGPT (Codex) session & weekly usage limits at a glance in a popup and on-page overlay. Privacy-first, no setup.
 
 ## Full Description
 
