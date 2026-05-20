@@ -1,4 +1,4 @@
-.aiu-root {
+:host {
   all: initial;
   color-scheme: dark;
   --aiu-bg: #161616;

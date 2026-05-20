@@ -70,7 +70,27 @@ const UsageOverlay: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [hasInput, setHasInput] = useState(false);
   const now = useNow(60_000);
+
+  useEffect(() => {
+    const checkElement = (): void => {
+      const selector = '#chat-input-file-upload-onpage, [data-testid="chat-input"]';
+      setHasInput(document.querySelector(selector) !== null);
+    };
+
+    checkElement();
+
+    const observer = new MutationObserver(checkElement);
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -154,7 +174,7 @@ const UsageOverlay: React.FC = () => {
     });
   }, []);
 
-  if (!enabled) {
+  if (!enabled || !hasInput) {
     return null;
   }
 
