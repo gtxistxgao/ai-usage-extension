@@ -1,18 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import root from 'react-shadow';
 import claudeBrandAsset from '../assets/brands/claude-anthropic.jpg?inline';
+import codexBrandAsset from '../assets/brands/codex-openai.jpg?inline';
 import { STORAGE_KEYS } from '../shared/constants';
 import { useNow } from '../shared/hooks/useNow';
 import { requestUsageRefresh } from '../shared/messaging';
-import type { ClaudeUsage, UsageLimit, UsageState } from '../shared/types';
+import type { ClaudeUsage, CodexUsage, UsageLimit, UsageState } from '../shared/types';
 import { formatRelativeTime, formatReset, getUsageTone } from '../shared/utils';
-import overlayStyles from './styles/overlay.css?inline';
 
 const HOST_ID = 'ai-usage-claude-overlay-host';
 
-/** Closest upcoming reset across both windows, as a countdown label. */
-const nextReset = (usage: ClaudeUsage, now: number): string => {
+type AnyUsage = {
+  session: UsageLimit;
+  weekly: UsageLimit;
+  lastUpdated: number;
+};
+
+const nextReset = (usage: AnyUsage, now: number): string => {
   const upcoming = [usage.session.resetsAt, usage.weekly.resetsAt]
     .filter((value): value is string => Boolean(value))
     .map((value) => new Date(value).getTime())
@@ -64,9 +68,19 @@ const OverlayMetric: React.FC<OverlayMetricProps> = ({ label, limit, now }) => {
   );
 };
 
+const isClaude = window.location.hostname.includes('claude.ai');
+const enabledKey = isClaude ? STORAGE_KEYS.claudeOverlayEnabled : STORAGE_KEYS.codexOverlayEnabled;
+const collapsedKey = isClaude ? STORAGE_KEYS.claudeOverlayCollapsed : STORAGE_KEYS.codexOverlayCollapsed;
+const usageField = isClaude ? 'claude' : 'codex';
+const brandAsset = isClaude ? claudeBrandAsset : codexBrandAsset;
+const title = isClaude ? 'Claude' : 'Codex';
+const inputSelector = isClaude
+  ? '#chat-input-file-upload-onpage, [data-testid="chat-input"]'
+  : '#prompt-textarea, [data-testid="composer-footer-actions"], [data-testid="chat-input"]';
+
 const UsageOverlay: React.FC = () => {
   const [enabled, setEnabled] = useState(true);
-  const [usage, setUsage] = useState<ClaudeUsage | null>(null);
+  const [usage, setUsage] = useState<ClaudeUsage | CodexUsage | null>(null);
   const [collapsed, setCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -75,8 +89,7 @@ const UsageOverlay: React.FC = () => {
 
   useEffect(() => {
     const checkElement = (): void => {
-      const selector = '#chat-input-file-upload-onpage, [data-testid="chat-input"]';
-      setHasInput(document.querySelector(selector) !== null);
+      setHasInput(document.querySelector(inputSelector) !== null);
     };
 
     checkElement();
@@ -98,8 +111,8 @@ const UsageOverlay: React.FC = () => {
     const hydrate = async (): Promise<void> => {
       const snapshot = await chrome.storage.local.get([
         STORAGE_KEYS.usageState,
-        STORAGE_KEYS.claudeOverlayEnabled,
-        STORAGE_KEYS.claudeOverlayCollapsed,
+        enabledKey,
+        collapsedKey,
       ]);
 
       if (!active) {
@@ -107,9 +120,9 @@ const UsageOverlay: React.FC = () => {
       }
 
       const usageState = (snapshot[STORAGE_KEYS.usageState] ?? {}) as UsageState;
-      setUsage(usageState.claude ?? null);
-      setEnabled(snapshot[STORAGE_KEYS.claudeOverlayEnabled] !== false);
-      setCollapsed(snapshot[STORAGE_KEYS.claudeOverlayCollapsed] === true);
+      setUsage(usageState[usageField] ?? null);
+      setEnabled(snapshot[enabledKey] !== false);
+      setCollapsed(snapshot[collapsedKey] === true);
       setIsLoading(false);
     };
 
@@ -125,15 +138,15 @@ const UsageOverlay: React.FC = () => {
 
       if (changes[STORAGE_KEYS.usageState]) {
         const next = (changes[STORAGE_KEYS.usageState].newValue ?? {}) as UsageState;
-        setUsage(next.claude ?? null);
+        setUsage(next[usageField] ?? null);
       }
 
-      if (changes[STORAGE_KEYS.claudeOverlayEnabled]) {
-        setEnabled(changes[STORAGE_KEYS.claudeOverlayEnabled].newValue !== false);
+      if (changes[enabledKey]) {
+        setEnabled(changes[enabledKey].newValue !== false);
       }
 
-      if (changes[STORAGE_KEYS.claudeOverlayCollapsed]) {
-        setCollapsed(changes[STORAGE_KEYS.claudeOverlayCollapsed].newValue === true);
+      if (changes[collapsedKey]) {
+        setCollapsed(changes[collapsedKey].newValue === true);
       }
     };
 
@@ -169,7 +182,7 @@ const UsageOverlay: React.FC = () => {
   const toggleCollapsed = useCallback((): void => {
     setCollapsed((prev) => {
       const next = !prev;
-      void chrome.storage.local.set({ [STORAGE_KEYS.claudeOverlayCollapsed]: next });
+      void chrome.storage.local.set({ [collapsedKey]: next });
       return next;
     });
   }, []);
@@ -179,26 +192,25 @@ const UsageOverlay: React.FC = () => {
   }
 
   return (
-    <root.div className="aiu-root">
-      <style>{overlayStyles}</style>
+    <div className="aiu-root">
       <div className={`aiu-wrap ${collapsed ? 'aiu-wrap--collapsed' : ''}`}>
         <button
           type="button"
           className="aiu-tab"
           onClick={toggleCollapsed}
           title={collapsed ? 'Show limits' : 'Hide limits'}
-          aria-label={collapsed ? 'Show Claude limits' : 'Hide Claude limits'}
+          aria-label={collapsed ? `Show ${title} limits` : `Hide ${title} limits`}
           aria-expanded={!collapsed}
         >
-          <img className="aiu-tab-icon" src={claudeBrandAsset} alt="" />
-          <span className="aiu-tab-label">Claude</span>
+          <img className="aiu-tab-icon" src={brandAsset} alt="" />
+          <span className="aiu-tab-label">{title}</span>
         </button>
 
         <div className="aiu-card">
           <div className="aiu-header">
-            <img className="aiu-brand" src={claudeBrandAsset} alt="" />
+            <img className="aiu-brand" src={brandAsset} alt="" />
             <div className="aiu-heading">
-              <p className="aiu-title">Claude</p>
+              <p className="aiu-title">{title}</p>
               <p className="aiu-subtitle">
                 {isRefreshing
                   ? 'refreshing…'
@@ -225,20 +237,62 @@ const UsageOverlay: React.FC = () => {
           )}
         </div>
       </div>
-    </root.div>
+    </div>
   );
 };
 
-const mount = (): void => {
-  if (document.getElementById(HOST_ID)) {
+let hostRef: HTMLDivElement | null = null;
+let rootRef: ReturnType<typeof createRoot> | null = null;
+
+const attachHost = (): void => {
+  const target = document.body ?? document.documentElement;
+  if (!target) {
+    setTimeout(attachHost, 50);
+    return;
+  }
+
+  if (hostRef && hostRef.isConnected) {
+    return;
+  }
+
+  const existing = document.getElementById(HOST_ID) as HTMLDivElement | null;
+  if (existing) {
+    hostRef = existing;
+    if (!rootRef) {
+      rootRef = createRoot(existing);
+      rootRef.render(<UsageOverlay />);
+    }
     return;
   }
 
   const host = document.createElement('div');
   host.id = HOST_ID;
-  document.documentElement.appendChild(host);
+  target.appendChild(host);
+  hostRef = host;
 
-  createRoot(host).render(<UsageOverlay />);
+  if (rootRef) {
+    rootRef.unmount();
+  }
+  rootRef = createRoot(host);
+  rootRef.render(<UsageOverlay />);
 };
 
-mount();
+const mount = (): void => {
+  attachHost();
+
+  const watcher = new MutationObserver(() => {
+    if (!hostRef || !hostRef.isConnected) {
+      attachHost();
+    }
+  });
+  watcher.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
+};
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', mount, { once: true });
+} else {
+  mount();
+}
