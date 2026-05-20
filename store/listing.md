@@ -24,7 +24,6 @@ sessions — there is no external server, no account to create, and no telemetry
 
 ### What you see
 
-- A live toolbar badge that turns from purple to pink as you approach your cap.
 - A popup with the 5-hour session window and the 7-day weekly window for each
   provider, including time-to-reset countdowns.
 - An on-page overlay next to the chat input on claude.ai and chatgpt.com so you
@@ -76,6 +75,6 @@ and as an overlay on the provider pages.
 
 This extension calls only the rate-limit endpoints of the user's already
 signed-in Claude and Codex accounts, caches the result in `chrome.storage.local`,
-and renders it in the popup, on-page overlay, and toolbar badge. Each requested
-permission maps to one of those tasks; the full rationale is documented in
+and renders it in the popup and on-page overlay. Each requested permission maps
+to one of those tasks; the full rationale is documented in
 [permissions.md](./permissions.md).

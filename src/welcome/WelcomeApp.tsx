@@ -21,7 +21,7 @@ const STEPS: Step[] = [
   {
     index: 3,
     title: 'Watch your limits',
-    body: 'Click the icon for live session and weekly limits. The toolbar badge always shows your highest usage at a glance.',
+    body: 'Click the icon for live session and weekly limits. The popup always shows your highest usage at a glance.',
   },
 ];
 

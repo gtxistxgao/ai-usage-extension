@@ -19,7 +19,7 @@ or written to any other storage backend.
 ## alarms
 
 A single recurring `chrome.alarms` entry wakes the service worker every five
-minutes to re-fetch the usage limits. Without it the badge and overlay would
+minutes to re-fetch the usage limits. Without it the on-page overlay would
 only update while the popup was open, which defeats the at-a-glance use case.
 
 ## cookies

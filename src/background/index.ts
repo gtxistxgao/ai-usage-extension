@@ -1,69 +1,9 @@
 import { REFRESH_ALARM, REFRESH_INTERVAL_MINUTES } from '../shared/constants';
 import type { ExtensionMessage, RefreshUsageResponse, UsageState } from '../shared/types';
-import { getUsageTone } from '../shared/utils';
 import { UsageService } from './services/UsageService';
 
-const BADGE_COLORS: Record<ReturnType<typeof getUsageTone>, string> = {
-  ok: '#8752FA',
-  warning: '#CD83FF',
-  critical: '#ff3366',
-};
-
-const updateIcon = async (state: UsageState): Promise<void> => {
-  const claudeSession = state.claude?.session.percentage;
-  const codexSession = state.codex?.session.percentage;
-
-  const hasClaude = typeof claudeSession === 'number';
-  const hasCodex = typeof codexSession === 'number';
-
-  if (!hasClaude && !hasCodex) {
-    void chrome.action.setBadgeText({ text: '' });
-    void chrome.action.setIcon({
-      path: {
-        '16': '/icons/icon-16.png',
-        '48': '/icons/icon-48.png',
-        '128': '/icons/icon-128.png',
-      },
-    });
-    return;
-  }
-
-  void chrome.action.setIcon({
-    path: {
-      '16': '/icons/icon-16.png',
-      '48': '/icons/icon-48.png',
-      '128': '/icons/icon-128.png',
-    },
-  });
-
-  const claudeStr = hasClaude ? Math.min(99, Math.round(claudeSession)).toString() : '--';
-  const codexStr = hasCodex ? Math.min(99, Math.round(codexSession)).toString() : '--';
-  const text = `${claudeStr}|${codexStr}`;
-
-  void chrome.action.setBadgeText({ text });
-
-  const tones: ReturnType<typeof getUsageTone>[] = [];
-  if (hasClaude) {
-    tones.push(getUsageTone(claudeSession));
-  }
-  if (hasCodex) {
-    tones.push(getUsageTone(codexSession));
-  }
-
-  let highestTone: ReturnType<typeof getUsageTone> = 'ok';
-  if (tones.includes('critical')) {
-    highestTone = 'critical';
-  } else if (tones.includes('warning')) {
-    highestTone = 'warning';
-  }
-
-  void chrome.action.setBadgeBackgroundColor({ color: BADGE_COLORS[highestTone] });
-};
-
 const refreshUsage = async (): Promise<UsageState> => {
-  const state = await UsageService.refreshAllUsage();
-  await updateIcon(state);
-  return state;
+  return UsageService.refreshAllUsage();
 };
 
 chrome.runtime.onInstalled.addListener((details) => {
