@@ -9,31 +9,96 @@ const BADGE_COLORS: Record<ReturnType<typeof getUsageTone>, string> = {
   critical: '#e0533f',
 };
 
-/** Reflect the highest usage percentage on the toolbar icon badge. */
-const updateBadge = (state: UsageState): void => {
-  const percents: number[] = [];
+let cachedLogoBitmap: ImageBitmap | null = null;
 
-  if (state.claude) {
-    percents.push(state.claude.session.percentage, state.claude.weekly.percentage);
+const getLogoBitmap = async (): Promise<ImageBitmap | null> => {
+  if (cachedLogoBitmap) {
+    return cachedLogoBitmap;
   }
-  if (state.codex) {
-    percents.push(state.codex.session.percentage, state.codex.weekly.percentage);
+  try {
+    const response = await fetch(chrome.runtime.getURL('icons/icon-128.png'));
+    const blob = await response.blob();
+    cachedLogoBitmap = await createImageBitmap(blob);
+    return cachedLogoBitmap;
+  } catch {
+    return null;
   }
+};
 
-  if (percents.length === 0) {
+const updateIcon = async (state: UsageState): Promise<void> => {
+  const hasClaude = Boolean(state.claude);
+  const hasCodex = Boolean(state.codex);
+
+  if (!hasClaude && !hasCodex) {
     void chrome.action.setBadgeText({ text: '' });
+    void chrome.action.setIcon({
+      path: {
+        '16': 'icons/icon-16.png',
+        '48': 'icons/icon-48.png',
+        '128': 'icons/icon-128.png',
+      },
+    });
     return;
   }
 
-  const peak = Math.round(Math.max(...percents));
-  void chrome.action.setBadgeText({ text: String(peak) });
-  void chrome.action.setBadgeBackgroundColor({ color: BADGE_COLORS[getUsageTone(peak)] });
+  void chrome.action.setBadgeText({ text: '' });
+
+  const canvas = new OffscreenCanvas(32, 32);
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    return;
+  }
+
+  ctx.clearRect(0, 0, 32, 32);
+
+  const logoBitmap = await getLogoBitmap();
+  if (logoBitmap) {
+    ctx.drawImage(logoBitmap, 0, 0, 32, 32);
+  }
+
+  const trackColor = 'rgba(128, 128, 128, 0.3)';
+
+  const claudeSession = state.claude?.session.percentage ?? 0;
+  const claudeTone = getUsageTone(claudeSession);
+  const claudeColor = BADGE_COLORS[claudeTone];
+  const claudeHeight = Math.round(24 * (claudeSession / 100));
+
+  ctx.fillStyle = trackColor;
+  ctx.beginPath();
+  ctx.roundRect(2, 4, 3, 24, 1);
+  ctx.fill();
+
+  if (hasClaude && claudeHeight > 0) {
+    ctx.fillStyle = claudeColor;
+    ctx.beginPath();
+    ctx.roundRect(2, 28 - claudeHeight, 3, claudeHeight, 1);
+    ctx.fill();
+  }
+
+  const codexSession = state.codex?.session.percentage ?? 0;
+  const codexTone = getUsageTone(codexSession);
+  const codexColor = BADGE_COLORS[codexTone];
+  const codexHeight = Math.round(24 * (codexSession / 100));
+
+  ctx.fillStyle = trackColor;
+  ctx.beginPath();
+  ctx.roundRect(27, 4, 3, 24, 1);
+  ctx.fill();
+
+  if (hasCodex && codexHeight > 0) {
+    ctx.fillStyle = codexColor;
+    ctx.beginPath();
+    ctx.roundRect(27, 28 - codexHeight, 3, codexHeight, 1);
+    ctx.fill();
+  }
+
+  const imageData = ctx.getImageData(0, 0, 32, 32);
+  void chrome.action.setIcon({ imageData: { '32': imageData } });
 };
 
-/** Refresh every provider and keep the badge in sync. */
 const refreshUsage = async (): Promise<UsageState> => {
   const state = await UsageService.refreshAllUsage();
-  updateBadge(state);
+  await updateIcon(state);
   return state;
 };
 
