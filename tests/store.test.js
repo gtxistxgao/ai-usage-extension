@@ -149,7 +149,7 @@ describe('store/promo/', () => {
 
   // Required image assets — small/marquee tiles are optional in the README and
   // therefore not enforced. Add to this list once they are required.
-  const requiredAssets = ['icon-128.png', 'screenshot-1.png', 'screenshot-2.png'];
+  const requiredAssets = ['icon-128.png', 'screenshot-1.jpg', 'screenshot-2.jpg'];
 
   for (const asset of requiredAssets) {
     it(`has ${asset}`, () => {
