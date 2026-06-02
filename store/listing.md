@@ -9,7 +9,7 @@ Everything below is uploaded to the Web Store dashboard as-is.
 
 ## Name
 
-AI Usage Tracker — Claude & Codex Limits
+AI Usage Tracker: Claude & Codex Limits
 
 ## Short Description
 
@@ -17,31 +17,33 @@ Track Claude and ChatGPT (Codex) session & weekly usage limits at a glance in a 
 
 ## Full Description
 
-AI Usage Tracker is a free, privacy-first Chrome extension that surfaces your
-Claude and Codex (ChatGPT) usage limits without ever leaving the tab you're
-working in. It reads the rate-limit data straight from your own authenticated
-sessions — there is no external server, no account to create, and no telemetry.
+AI Usage Tracker: Claude & Codex Limits is a browser extension for people who want a clearer, more predictable AI assistant experience. Track your message limits, view real-time countdowns, and display unobtrusive usage meters directly on provider pages so you can focus on your work without hitting sudden limits.
 
-### What you see
+Whether you use Claude and ChatGPT for coding, writing, research, or deep problem-solving, AI Usage Tracker helps reduce the friction of hitting limit blocks and gives you direct control over how your capacity is monitored. You choose where the overlay appears and how you track your limits.
 
-- A popup with the 5-hour session window and the 7-day weekly window for each
-  provider, including time-to-reset countdowns.
-- An on-page overlay next to the chat input on claude.ai and chatgpt.com so you
-  can pace yourself without opening the popup.
+Key features:
 
-### Who it's for
+- Real-time limit tracking for Claude (claude.ai) and ChatGPT/Codex (chatgpt.com)
+- At-a-glance toolbar badge showing your highest current usage percentage
+- Contextual on-page overlays positioned right next to chat inputs
+- Collapsible capsule widget in Shadow DOM to prevent host page style clashes
+- Session-based (5-hour) and weekly (7-day) capacity monitoring
+- Live countdowns showing precisely when your limits will reset
+- On-demand refresh button and automatic background syncing every 5 minutes
+- 100% private: reads directly from your own authenticated browser sessions
 
-- Engineers running long Claude Code or Codex sessions who need to know how
-  much budget they have left before the next reset.
-- ChatGPT Plus and Pro subscribers who want a clear read on their weekly cap.
-- Anyone tired of hitting "you've reached your limit" with no warning.
+Why users choose AI Usage Tracker:
+- Fast, automated usage polling without manual page reloading
+- Cleaner UI that integrates seamlessly with AI chat interfaces
+- Better pacing for heavy coding, learning, or writing sessions
+- Safe by design with no external servers, no tracking, and no telemetry
+- Simple side-panel controls with quick enable/disable options
 
-### How it works
-
-Every five minutes the extension's background worker re-reads the same usage
-endpoints the official web apps already call when you're signed in. The data
-is cached in `chrome.storage.local` and rendered by a small React UI. Nothing
-is sent outside your browser.
+Great for:
+- Developers and power users who use Claude Code or ChatGPT limits heavily
+- Plus, Pro, and Team plan subscribers who want a clear read on their quotas
+- Professionals and students who want to avoid interrupting their deep work flow
+- Anyone tired of hitting "you've reached your limit" with no prior warning
 
 ### Privacy
 
