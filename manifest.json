@@ -1,10 +1,18 @@
 {
   "manifest_version": 3,
   "name": "AI Usage Tracker: Claude & Codex Limits",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Track Claude and ChatGPT (Codex) session & weekly usage limits at a glance in a popup and on-page overlay. Privacy-first, no setup.",
-  "permissions": ["storage", "alarms", "cookies"],
-  "host_permissions": ["https://claude.ai/*", "https://chatgpt.com/*", "https://chat.openai.com/*"],
+  "permissions": [
+    "storage",
+    "alarms",
+    "cookies"
+  ],
+  "host_permissions": [
+    "https://claude.ai/*",
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*"
+  ],
   "background": {
     "service_worker": "src/background/index.ts",
     "type": "module"
@@ -15,9 +23,17 @@
   },
   "content_scripts": [
     {
-      "matches": ["https://claude.ai/*", "https://chatgpt.com/*", "https://chat.openai.com/*"],
-      "js": ["src/content/index.tsx"],
-      "css": ["src/content/styles/overlay.css"],
+      "matches": [
+        "https://claude.ai/*",
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*"
+      ],
+      "js": [
+        "src/content/index.tsx"
+      ],
+      "css": [
+        "src/content/styles/overlay.css"
+      ],
       "run_at": "document_idle"
     }
   ],
