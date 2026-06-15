@@ -1,12 +1,12 @@
 {
   "appName": {
-    "message": "AI Usage Tracker: Claude और Codex सीमाएं"
+    "message": "AI Usage Tracker: Claude और Codex की सीमाएं"
   },
   "appShortName": {
     "message": "AI Usage Tracker"
   },
   "appDescription": {
-    "message": "Claude और ChatGPT (Codex) की सत्र व साप्ताहिक सीमाएं पॉपअप, बैज और ओवरले में देखें। निजी, बिना सेटअप."
+    "message": "Claude और ChatGPT (Codex) की सत्र और साप्ताहिक सीमाएं पॉपअप, बैज और पेज ओवरले में देखें। निजी, बिना सेटअप।"
   },
   "popupEyebrow": {
     "message": "AI क्षमता"
@@ -15,16 +15,16 @@
     "message": "उपयोग"
   },
   "refreshUsage": {
-    "message": "उपयोग रीफ्रेश करें"
+    "message": "उपयोग अपडेट करें"
   },
   "refreshUsageLimits": {
-    "message": "सीमाएं रीफ्रेश करें"
+    "message": "उपयोग सीमाएं अपडेट करें"
   },
   "refreshErrorPrefix": {
-    "message": "रीफ्रेश नहीं हो सका"
+    "message": "अपडेट नहीं हो सका"
   },
   "refreshFailed": {
-    "message": "रीफ्रेश विफल"
+    "message": "अपडेट विफल रहा"
   },
   "overlayToggleLabel": {
     "message": "पेज ओवरले"
@@ -33,22 +33,22 @@
     "message": "डेटा लोड हो रहा है"
   },
   "notConnected": {
-    "message": "कनेक्ट नहीं"
+    "message": "कनेक्ट नहीं है"
   },
   "updated": {
-    "message": "$1 अपडेट"
+    "message": "$1 अपडेट किया गया"
   },
   "refreshing": {
-    "message": "रीफ्रेश हो रहा है..."
+    "message": "अपडेट हो रहा है..."
   },
   "waitingForSnapshot": {
-    "message": "डेटा की प्रतीक्षा"
+    "message": "डेटा की प्रतीक्षा है"
   },
   "sessionLimit": {
-    "message": "सत्र · 5घं"
+    "message": "सत्र · 5 घंटे"
   },
   "weeklyLimit": {
-    "message": "साप्ताहिक · 7दि"
+    "message": "साप्ताहिक · 7 दिन"
   },
   "planLabel": {
     "message": "प्लान · $1"
@@ -69,16 +69,16 @@
     "message": "सीमाएं"
   },
   "emptyClaude": {
-    "message": "अभी डेटा नहीं है। साइन इन करके claude.ai खोलें और रीफ्रेश करें।"
+    "message": "अभी कोई डेटा नहीं है। साइन इन करके claude.ai खोलें, फिर अपडेट करें।"
   },
   "emptyCodex": {
-    "message": "अभी डेटा नहीं है। साइन इन करके chatgpt.com खोलें और रीफ्रेश करें।"
+    "message": "अभी कोई डेटा नहीं है। साइन इन करके chatgpt.com खोलें, फिर अपडेट करें।"
   },
   "emptyOverlay": {
-    "message": "अभी डेटा नहीं है। पॉपअप खोलें और रीफ्रेश करें।"
+    "message": "अभी कोई डेटा नहीं है। पॉपअप खोलें और अपडेट करें।"
   },
   "sourceCode": {
-    "message": "सोर्स कोड"
+    "message": "स्रोत कोड"
   },
   "github": {
     "message": "GitHub"
@@ -96,12 +96,12 @@
     "message": "$1 पहले"
   },
   "timeDayShort": {
-    "message": "दि"
+    "message": "दिन"
   },
   "timeHourShort": {
-    "message": "घं"
+    "message": "घं."
   },
   "timeMinuteShort": {
-    "message": "मि"
+    "message": "मि."
   }
 }

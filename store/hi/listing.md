@@ -2,45 +2,45 @@
 
 ## Name
 
-AI Usage Tracker: Claude और Codex सीमाएं
+AI Usage Tracker: Claude और Codex की सीमाएं
 
 ## Short Description
 
-Claude और ChatGPT (Codex) की सत्र व साप्ताहिक सीमाएं पॉपअप, बैज और ओवरले में देखें। निजी, बिना सेटअप.
+Claude और ChatGPT (Codex) की सत्र और साप्ताहिक सीमाएं पॉपअप, बैज और पेज ओवरले में देखें। निजी, बिना सेटअप।
 
 ## Full Description
 
-AI Usage Tracker: Claude और Codex सीमाएं उन लोगों के लिए एक ब्राउज़र एक्सटेंशन है जो अधिक स्पष्ट और अधिक पूर्वानुमेय AI assistant अनुभव चाहते हैं। अपनी message limits ट्रैक करें, real-time countdowns देखें, और provider pages पर सीधे unobtrusive usage meters दिखाएं ताकि आप अचानक limits से टकराए बिना अपने काम पर ध्यान दे सकें।
+AI Usage Tracker: Claude और Codex की सीमाएं उन लोगों के लिए ब्राउज़र एक्सटेंशन है जो AI assistant का अनुभव ज्यादा साफ और भरोसेमंद बनाना चाहते हैं। अपनी संदेश सीमाएं ट्रैक करें, रीयल-टाइम काउंटडाउन देखें, और प्रदाता पेजों पर सीधे हल्के उपयोग मीटर दिखाएं ताकि आप अचानक सीमा पर पहुंचने की चिंता के बिना अपने काम पर ध्यान दे सकें।
 
-चाहे आप Claude और ChatGPT का उपयोग coding, writing, research या deep problem-solving के लिए करते हों, AI Usage Tracker limit blocks से होने वाली friction कम करता है और आपको यह सीधा control देता है कि आपकी capacity कैसे monitor की जाती है। आप चुनते हैं कि overlay कहां दिखाई दे और आप अपनी limits कैसे track करें।
+चाहे आप Claude और ChatGPT का उपयोग कोडिंग, लेखन, रिसर्च या गहरी समस्या-समाधान के लिए करते हों, AI Usage Tracker सीमा ब्लॉक होने से होने वाली रुकावट कम करता है और आपको अपनी उपलब्ध क्षमता की निगरानी पर सीधा नियंत्रण देता है। आप तय करते हैं कि ओवरले कहां दिखे और आप अपनी सीमाओं को कैसे ट्रैक करें।
 
-मुख्य features:
+मुख्य सुविधाएं:
 
-- Claude (claude.ai) और ChatGPT/Codex (chatgpt.com) के लिए real-time limit tracking
-- Toolbar badge जो आपका सबसे ऊंचा current usage percentage एक नजर में दिखाता है
-- Contextual on-page overlays जो chat inputs के ठीक पास positioned होते हैं
-- Shadow DOM में collapsible capsule widget ताकि host page styles से clash न हो
-- Session-based (5-hour) और weekly (7-day) capacity monitoring
-- Live countdowns जो ठीक-ठीक दिखाते हैं कि आपकी limits कब reset होंगी
-- On-demand refresh button और हर 5 minutes में automatic background syncing
-- 100% private: आपकी अपनी authenticated browser sessions से सीधे पढ़ता है
+- Claude (claude.ai) और ChatGPT/Codex (chatgpt.com) के लिए रीयल-टाइम सीमा ट्रैकिंग
+- टूलबार बैज, जो आपका सबसे अधिक मौजूदा उपयोग प्रतिशत एक नजर में दिखाता है
+- संदर्भ के अनुसार दिखने वाले पेज ओवरले, जो चैट इनपुट के ठीक पास रखे जाते हैं
+- Shadow DOM में बना मोड़ने योग्य कैप्सूल विजेट, ताकि होस्ट पेज की शैलियों से टकराव न हो
+- सत्र-आधारित (5 घंटे) और साप्ताहिक (7 दिन) क्षमता निगरानी
+- लाइव काउंटडाउन, जो ठीक-ठीक दिखाते हैं कि आपकी सीमाएं कब रीसेट होंगी
+- जरूरत पड़ने पर अपडेट बटन और हर 5 मिनट में अपने-आप बैकग्राउंड सिंक
+- 100% निजी: आपकी अपनी प्रमाणित ब्राउज़र सत्रों से सीधे पढ़ता है
 
-Users AI Usage Tracker क्यों चुनते हैं:
-- Manual page reloading के बिना fast, automated usage polling
-- Cleaner UI जो AI chat interfaces के साथ seamlessly integrate होता है
-- Heavy coding, learning या writing sessions के लिए बेहतर pacing
-- Safe by design, कोई external servers नहीं, कोई tracking नहीं, कोई telemetry नहीं
-- Quick enable/disable options के साथ simple side-panel controls
+उपयोगकर्ता AI Usage Tracker क्यों चुनते हैं:
+- पेज को हाथ से रीलोड किए बिना तेज, स्वचालित उपयोग जांच
+- साफ UI, जो AI चैट इंटरफेस के साथ सहज रूप से फिट होता है
+- लंबी कोडिंग, सीखने या लेखन सत्रों के लिए बेहतर गति नियंत्रण
+- डिजाइन से सुरक्षित: कोई बाहरी सर्वर नहीं, कोई ट्रैकिंग नहीं, कोई टेलीमेट्री नहीं
+- सरल साइड-पैनल नियंत्रण, जिनसे जल्दी चालू या बंद किया जा सकता है
 
-इनके लिए बढ़िया:
-- Developers और power users जो Claude Code या ChatGPT limits का heavy उपयोग करते हैं
-- Plus, Pro और Team plan subscribers जिन्हें अपनी quotas की clear read चाहिए
-- Professionals और students जो अपने deep work flow में interruption से बचना चाहते हैं
-- कोई भी व्यक्ति जो बिना warning “you've reached your limit” देखकर थक गया है
+इनके लिए अच्छा है:
+- डेवलपर और पावर यूजर, जो Claude Code या ChatGPT सीमाओं का भारी उपयोग करते हैं
+- Plus, Pro और Team प्लान के सब्सक्राइबर, जिन्हें अपनी कोटा साफ दिखनी चाहिए
+- प्रोफेशनल और छात्र, जो अपने गहरे काम के प्रवाह में रुकावट नहीं चाहते
+- कोई भी व्यक्ति जो बिना पहले से चेतावनी मिले “you've reached your limit” देखकर थक चुका है
 
 ## Keywords
 
-claude usage, claude limits, chatgpt limits, codex usage, ai usage tracker, rate limit tracker, claude reset, chatgpt quota, openai usage, productivity
+claude उपयोग, claude सीमाएं, chatgpt सीमाएं, codex उपयोग, ai usage tracker, सीमा ट्रैकर, claude reset, chatgpt quota, openai उपयोग, उत्पादकता
 
 ## Single Purpose
 
