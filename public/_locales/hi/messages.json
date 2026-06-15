@@ -1,0 +1,107 @@
+{
+  "appName": {
+    "message": "AI Usage Tracker: Claude और Codex सीमाएं"
+  },
+  "appShortName": {
+    "message": "AI Usage Tracker"
+  },
+  "appDescription": {
+    "message": "Claude और ChatGPT (Codex) की सत्र व साप्ताहिक सीमाएं पॉपअप, बैज और ओवरले में देखें। निजी, बिना सेटअप."
+  },
+  "popupEyebrow": {
+    "message": "AI क्षमता"
+  },
+  "popupTitle": {
+    "message": "उपयोग"
+  },
+  "refreshUsage": {
+    "message": "उपयोग रीफ्रेश करें"
+  },
+  "refreshUsageLimits": {
+    "message": "सीमाएं रीफ्रेश करें"
+  },
+  "refreshErrorPrefix": {
+    "message": "रीफ्रेश नहीं हो सका"
+  },
+  "refreshFailed": {
+    "message": "रीफ्रेश विफल"
+  },
+  "overlayToggleLabel": {
+    "message": "पेज ओवरले"
+  },
+  "loadingSnapshot": {
+    "message": "डेटा लोड हो रहा है"
+  },
+  "notConnected": {
+    "message": "कनेक्ट नहीं"
+  },
+  "updated": {
+    "message": "$1 अपडेट"
+  },
+  "refreshing": {
+    "message": "रीफ्रेश हो रहा है..."
+  },
+  "waitingForSnapshot": {
+    "message": "डेटा की प्रतीक्षा"
+  },
+  "sessionLimit": {
+    "message": "सत्र · 5घं"
+  },
+  "weeklyLimit": {
+    "message": "साप्ताहिक · 7दि"
+  },
+  "planLabel": {
+    "message": "प्लान · $1"
+  },
+  "resetsLabel": {
+    "message": "$1 में रीसेट"
+  },
+  "nextResetLabel": {
+    "message": "$1 में रीसेट"
+  },
+  "showLimits": {
+    "message": "सीमाएं दिखाएं"
+  },
+  "hideLimits": {
+    "message": "सीमाएं छिपाएं"
+  },
+  "limitsTab": {
+    "message": "सीमाएं"
+  },
+  "emptyClaude": {
+    "message": "अभी डेटा नहीं है। साइन इन करके claude.ai खोलें और रीफ्रेश करें।"
+  },
+  "emptyCodex": {
+    "message": "अभी डेटा नहीं है। साइन इन करके chatgpt.com खोलें और रीफ्रेश करें।"
+  },
+  "emptyOverlay": {
+    "message": "अभी डेटा नहीं है। पॉपअप खोलें और रीफ्रेश करें।"
+  },
+  "sourceCode": {
+    "message": "सोर्स कोड"
+  },
+  "github": {
+    "message": "GitHub"
+  },
+  "timeUnknown": {
+    "message": "अज्ञात"
+  },
+  "timeNow": {
+    "message": "अभी"
+  },
+  "timeJustNow": {
+    "message": "अभी-अभी"
+  },
+  "timeAgo": {
+    "message": "$1 पहले"
+  },
+  "timeDayShort": {
+    "message": "दि"
+  },
+  "timeHourShort": {
+    "message": "घं"
+  },
+  "timeMinuteShort": {
+    "message": "मि"
+  }
+}

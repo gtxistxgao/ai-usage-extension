@@ -5,6 +5,7 @@ import codexBrandAsset from '../assets/brands/codex-openai.jpg?inline';
 import limitBrandAsset from '../../public/icons/limit-icon-2.0.png?inline';
 import { STORAGE_KEYS } from '../shared/constants';
 import { useNow } from '../shared/hooks/useNow';
+import { msg } from '../shared/i18n';
 import { requestUsageRefresh } from '../shared/messaging';
 import type { ClaudeUsage, CodexUsage, UsageLimit, UsageState } from '../shared/types';
 import { formatRelativeTime, formatReset, getUsageTone } from '../shared/utils';
@@ -24,7 +25,7 @@ const nextReset = (usage: AnyUsage, now: number): string => {
     .filter((value) => Number.isFinite(value) && value > now)
     .sort((a, b) => a - b)[0];
 
-  return upcoming ? formatReset(new Date(upcoming).toISOString(), now) : 'unknown';
+  return upcoming ? formatReset(new Date(upcoming).toISOString(), now) : msg('timeUnknown');
 };
 
 interface OverlayMetricProps {
@@ -63,7 +64,7 @@ const OverlayMetric: React.FC<OverlayMetricProps> = ({ label, limit, now }) => {
             {' · '}
           </>
         )}
-        resets <span>{formatReset(limit.resetsAt, now)}</span>
+        {msg('resetsLabel', formatReset(limit.resetsAt, now))}
       </div>
     </div>
   );
@@ -196,12 +197,12 @@ const UsageOverlay: React.FC = () => {
           type="button"
           className="aiu-tab"
           onClick={toggleCollapsed}
-          title={collapsed ? 'Show limits' : 'Hide limits'}
-          aria-label={collapsed ? 'Show limits' : 'Hide limits'}
+          title={collapsed ? msg('showLimits') : msg('hideLimits')}
+          aria-label={collapsed ? msg('showLimits') : msg('hideLimits')}
           aria-expanded={!collapsed}
         >
           <img className="aiu-tab-icon" src={limitBrandAsset} alt="" />
-          <span className="aiu-tab-label">LIMITS</span>
+          <span className="aiu-tab-label">{msg('limitsTab')}</span>
         </button>
 
         <div className="aiu-card">
@@ -211,10 +212,10 @@ const UsageOverlay: React.FC = () => {
               <p className="aiu-title">{title}</p>
               <p className="aiu-subtitle">
                 {isRefreshing
-                  ? 'refreshing…'
+                  ? msg('refreshing')
                   : usage
-                    ? `updated ${formatRelativeTime(usage.lastUpdated, now)} · resets ${nextReset(usage, now)}`
-                    : 'waiting for snapshot'}
+                    ? `${msg('updated', formatRelativeTime(usage.lastUpdated, now))} · ${msg('nextResetLabel', nextReset(usage, now))}`
+                    : msg('waitingForSnapshot')}
               </p>
             </div>
             <button
@@ -222,8 +223,8 @@ const UsageOverlay: React.FC = () => {
               className={`aiu-btn-refresh ${isRefreshing ? 'aiu-btn-refresh--spin' : ''}`}
               onClick={runRefresh}
               disabled={isRefreshing}
-              title="Refresh usage limits"
-              aria-label="Refresh usage limits"
+              title={msg('refreshUsageLimits')}
+              aria-label={msg('refreshUsageLimits')}
             >
               <svg
                 viewBox="0 0 24 24"
@@ -242,8 +243,8 @@ const UsageOverlay: React.FC = () => {
 
           {usage ? (
             <>
-              <OverlayMetric label="Session · 5h" limit={usage.session} now={now} />
-              <OverlayMetric label="Weekly · 7d" limit={usage.weekly} now={now} />
+              <OverlayMetric label={msg('sessionLimit')} limit={usage.session} now={now} />
+              <OverlayMetric label={msg('weeklyLimit')} limit={usage.weekly} now={now} />
             </>
           ) : isLoading || isRefreshing ? (
             <div className="aiu-loader" aria-hidden="true">
@@ -252,7 +253,7 @@ const UsageOverlay: React.FC = () => {
               <div className="aiu-loader__line aiu-loader__line--w60" />
             </div>
           ) : (
-            <div className="aiu-empty">No data yet. Open the popup and refresh.</div>
+            <div className="aiu-empty">{msg('emptyOverlay')}</div>
           )}
         </div>
       </div>

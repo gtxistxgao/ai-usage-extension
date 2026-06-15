@@ -46,6 +46,14 @@ const expectedPermissionHeadings = [
 const CHROME_SHORT_DESCRIPTION_MAX = 132;
 const SEO_FULL_DESCRIPTION_MIN = 600;
 const PERMISSION_RATIONALE_MIN = 60;
+const localizedStoreLocales = ['en', 'es', 'fr', 'de', 'it', 'pt_BR', 'ru', 'ja', 'zh_CN', 'hi'];
+const requiredListingHeadings = [
+  'Name',
+  'Short Description',
+  'Full Description',
+  'Keywords',
+  'Single Purpose',
+];
 
 describe('store/listing.md', () => {
   const path = 'store/listing.md';
@@ -57,7 +65,7 @@ describe('store/listing.md', () => {
   const listing = read(path);
   const present = new Set(headings(listing));
 
-  for (const required of ['Name', 'Short Description', 'Full Description', 'Keywords', 'Single Purpose']) {
+  for (const required of requiredListingHeadings) {
     it(`has the "## ${required}" section`, () => {
       assert.ok(
         present.has(required),
@@ -97,6 +105,68 @@ describe('store/listing.md', () => {
       .map((t) => t.trim())
       .filter(Boolean);
     assert.ok(terms.length >= 5, `Keywords has only ${terms.length} terms (need >= 5)`);
+  });
+});
+
+describe('localized store listings', () => {
+  for (const locale of localizedStoreLocales) {
+    const path = `store/${locale}/listing.md`;
+
+    it(`${path} has complete Chrome Web Store copy`, () => {
+      assert.ok(existsSync(resolve(root, path)), `${path} is missing`);
+
+      const listing = read(path);
+      const present = new Set(headings(listing));
+
+      for (const required of requiredListingHeadings) {
+        assert.ok(present.has(required), `${path} must contain a "## ${required}" heading`);
+      }
+
+      const shortDescription = sectionBody(listing, 'Short Description');
+      const fullDescription = sectionBody(listing, 'Full Description');
+      const keywords = sectionBody(listing, 'Keywords')
+        .replace(/\s+/g, ' ')
+        .split(',')
+        .map((term) => term.trim())
+        .filter(Boolean);
+
+      assert.ok(
+        shortDescription.length <= CHROME_SHORT_DESCRIPTION_MAX,
+        `${path} Short Description is ${shortDescription.length} chars, max is ${CHROME_SHORT_DESCRIPTION_MAX}`,
+      );
+      assert.ok(
+        fullDescription.length >= SEO_FULL_DESCRIPTION_MIN,
+        `${path} Full Description is only ${fullDescription.length} chars; aim for >=${SEO_FULL_DESCRIPTION_MIN} for SEO`,
+      );
+      assert.ok(keywords.length >= 5, `${path} Keywords has only ${keywords.length} terms`);
+    });
+  }
+});
+
+describe('extension localization', () => {
+  it('manifest uses Chrome i18n message placeholders', () => {
+    assert.equal(manifest.default_locale, 'en');
+    assert.equal(manifest.name, '__MSG_appName__');
+    assert.equal(manifest.description, '__MSG_appDescription__');
+    assert.equal(manifest.action.default_title, '__MSG_appShortName__');
+  });
+
+  it('all locale message files exist and expose the same keys', () => {
+    const basePath = 'public/_locales/en/messages.json';
+    const baseMessages = JSON.parse(read(basePath));
+    const baseKeys = Object.keys(baseMessages).sort();
+
+    for (const locale of localizedStoreLocales) {
+      const path = `public/_locales/${locale}/messages.json`;
+      assert.ok(existsSync(resolve(root, path)), `${path} is missing`);
+
+      const messages = JSON.parse(read(path));
+      assert.deepEqual(Object.keys(messages).sort(), baseKeys, `${path} has mismatched keys`);
+      assert.ok(
+        messages.appDescription.message.length <= CHROME_SHORT_DESCRIPTION_MAX,
+        `${path} appDescription is ${messages.appDescription.message.length} chars, max is ${CHROME_SHORT_DESCRIPTION_MAX}`,
+      );
+    }
   });
 });
 

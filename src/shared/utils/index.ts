@@ -1,4 +1,5 @@
 import { USAGE_THRESHOLDS } from '../constants';
+import { msg } from '../i18n';
 import type { UsageStatus } from '../types';
 
 /** @deprecated kept as an alias — prefer `UsageStatus` from shared/types. */
@@ -29,16 +30,16 @@ export const getUsageTone = (value: number): UsageStatus => {
  */
 export const formatReset = (resetAt: string | null, now: number): string => {
   if (!resetAt) {
-    return 'unknown';
+    return msg('timeUnknown');
   }
 
   const diff = new Date(resetAt).getTime() - now;
   if (!Number.isFinite(diff)) {
-    return 'unknown';
+    return msg('timeUnknown');
   }
 
   if (diff <= 0) {
-    return 'now';
+    return msg('timeNow');
   }
 
   const totalMinutes = Math.floor(diff / 60_000);
@@ -47,14 +48,14 @@ export const formatReset = (resetAt: string | null, now: number): string => {
 
   if (hours >= 24) {
     const days = Math.floor(hours / 24);
-    return `${days}d ${hours % 24}h`;
+    return `${days}${msg('timeDayShort')} ${hours % 24}${msg('timeHourShort')}`;
   }
 
   if (hours > 0) {
-    return `${hours}h ${minutes}m`;
+    return `${hours}${msg('timeHourShort')} ${minutes}${msg('timeMinuteShort')}`;
   }
 
-  return `${minutes}m`;
+  return `${minutes}${msg('timeMinuteShort')}`;
 };
 
 /**
@@ -65,17 +66,17 @@ export const formatRelativeTime = (timestamp: number, now: number): string => {
   const minutes = Math.floor(Math.max(0, now - timestamp) / 60_000);
 
   if (minutes < 1) {
-    return 'just now';
+    return msg('timeJustNow');
   }
 
   if (minutes < 60) {
-    return `${minutes}m ago`;
+    return msg('timeAgo', `${minutes}${msg('timeMinuteShort')}`);
   }
 
   const hours = Math.floor(minutes / 60);
   if (hours < 24) {
-    return `${hours}h ago`;
+    return msg('timeAgo', `${hours}${msg('timeHourShort')}`);
   }
 
-  return `${Math.floor(hours / 24)}d ago`;
+  return msg('timeAgo', `${Math.floor(hours / 24)}${msg('timeDayShort')}`);
 };

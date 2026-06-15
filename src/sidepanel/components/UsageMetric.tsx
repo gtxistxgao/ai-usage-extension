@@ -1,4 +1,5 @@
 import React from 'react';
+import { msg } from '../../shared/i18n';
 import type { UsageLimit } from '../../shared/types';
 import { formatReset } from '../../shared/utils';
 import { ProgressBar } from './ProgressBar';
@@ -26,7 +27,7 @@ export const UsageMetric: React.FC<UsageMetricProps> = ({ label, limit, now }) =
             {' · '}
           </>
         )}
-        resets <span>{formatReset(limit.resetsAt, now)}</span>
+        {msg('resetsLabel', formatReset(limit.resetsAt, now))}
       </p>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { STORAGE_KEYS } from '../../shared/constants';
+import { msg } from '../../shared/i18n';
 import { readUsageState, requestUsageRefresh } from '../../shared/messaging';
 import type { UsageState } from '../../shared/types';
 
@@ -81,7 +82,7 @@ export const useUsageData = (): UsageData => {
     try {
       setUsage(await requestUsageRefresh());
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Refresh failed');
+      setError(cause instanceof Error ? cause.message : msg('refreshFailed'));
     } finally {
       setRefreshing(false);
     }

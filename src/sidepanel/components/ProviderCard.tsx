@@ -1,4 +1,5 @@
 import React from 'react';
+import { msg } from '../../shared/i18n';
 import type { ClaudeUsage, CodexUsage } from '../../shared/types';
 import { formatRelativeTime } from '../../shared/utils';
 import { UsageCard } from './UsageCard';
@@ -39,10 +40,10 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
   footer,
 }) => {
   const subtitle = loading
-    ? 'loading snapshot'
+    ? msg('loadingSnapshot')
     : usage
-      ? `updated ${formatRelativeTime(usage.lastUpdated, now)}`
-      : 'not connected';
+      ? msg('updated', formatRelativeTime(usage.lastUpdated, now))
+      : msg('notConnected');
 
   return (
     <UsageCard title={title} subtitle={subtitle} iconSrc={iconSrc} iconAlt={iconAlt}>
@@ -50,10 +51,10 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
         <Skeleton />
       ) : usage ? (
         <>
-          <UsageMetric label="Session · 5h" limit={usage.session} now={now} />
-          <UsageMetric label="Weekly · 7d" limit={usage.weekly} now={now} />
+          <UsageMetric label={msg('sessionLimit')} limit={usage.session} now={now} />
+          <UsageMetric label={msg('weeklyLimit')} limit={usage.weekly} now={now} />
           {'plan' in usage && usage.plan !== 'unknown' && (
-            <p className="au-footnote">Plan · {usage.plan}</p>
+            <p className="au-footnote">{msg('planLabel', usage.plan)}</p>
           )}
         </>
       ) : (

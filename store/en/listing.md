@@ -1,11 +1,4 @@
-# Chrome Web Store Listing
-
-This file is the canonical source for the Chrome Web Store listing.
-Everything below is uploaded to the Web Store dashboard as-is.
-
-> The `store:check` tests in `tests/store.test.js` enforce that every
-> section below stays present and within Chrome's character limits.
-> Do not rename headings — the tests grep them by exact text.
+# Chrome Web Store Listing - English
 
 ## Name
 
@@ -45,31 +38,10 @@ Great for:
 - Professionals and students who want to avoid interrupting their deep work flow
 - Anyone tired of hitting "you've reached your limit" with no prior warning
 
-## Category
-
-Productivity
-
-## Language
-
-English
-
 ## Keywords
 
-claude usage, claude limits, claude rate limit tracker, codex usage, chatgpt
-limits, chatgpt rate limit, ai usage tracker, claude session reset, claude
-weekly limit, codex weekly cap, anthropic usage monitor, openai usage monitor,
-claude pro tracker, chatgpt plus tracker, claude code usage
+claude usage, claude limits, chatgpt limits, codex usage, ai usage tracker, rate limit tracker, claude reset, chatgpt quota, openai usage, productivity
 
 ## Single Purpose
 
-Display the current session and weekly usage limits for the signed-in user's
-Claude (claude.ai) and Codex (chatgpt.com) accounts, both in the extension UI
-and as an overlay on the provider pages.
-
-## Justification Summary
-
-This extension calls only the rate-limit endpoints of the user's already
-signed-in Claude and Codex accounts, caches the result in `chrome.storage.local`,
-and renders it in the popup and on-page overlay. Each requested permission maps
-to one of those tasks; the full rationale is documented in
-[permissions.md](./permissions.md).
+Display session and weekly usage limits for the signed-in user's Claude and ChatGPT/Codex accounts in the extension popup, toolbar badge, and provider-page overlay.

@@ -1,5 +1,6 @@
 import claudeBrandAsset from '../assets/brands/claude-anthropic.jpg';
 import codexBrandAsset from '../assets/brands/codex-openai.jpg';
+import { msg } from '../shared/i18n';
 import { useNow } from '../shared/hooks/useNow';
 import { ProviderCard } from './components/ProviderCard';
 import { useUsageData } from './hooks/useUsageData';
@@ -25,16 +26,16 @@ export const App = () => {
     <main className="au-shell">
       <header className="au-topbar">
         <div>
-          <p className="au-eyebrow">AI Capacity</p>
-          <h1 className="au-title">Usage</h1>
+          <p className="au-eyebrow">{msg('popupEyebrow')}</p>
+          <h1 className="au-title">{msg('popupTitle')}</h1>
         </div>
         <button
           type="button"
           onClick={() => void refresh()}
           disabled={refreshing}
           className={`au-btn-refresh ${refreshing ? 'au-btn-refresh--spin' : ''}`}
-          title="Refresh usage"
-          aria-label="Refresh usage"
+          title={msg('refreshUsage')}
+          aria-label={msg('refreshUsage')}
         >
           <svg
             viewBox="0 0 24 24"
@@ -53,14 +54,14 @@ export const App = () => {
 
       {error && (
         <p className="au-error" role="alert">
-          Couldn’t refresh — {error}
+          {msg('refreshErrorPrefix')} - {error}
         </p>
       )}
 
       <div className="au-global-controls">
         <div className="au-overlay-toggle">
-          <p className="au-overlay-toggle__label">On-Page Overlays</p>
-          <label className="au-switch" aria-label="Toggle on-page overlays">
+          <p className="au-overlay-toggle__label">{msg('overlayToggleLabel')}</p>
+          <label className="au-switch" aria-label={msg('overlayToggleLabel')}>
             <input
               type="checkbox"
               checked={claudeOverlayEnabled || codexOverlayEnabled}
@@ -83,7 +84,7 @@ export const App = () => {
           usage={usage.claude}
           loading={initialLoading}
           now={now}
-          emptyHint="No data yet. Open claude.ai while signed in, then refresh."
+          emptyHint={msg('emptyClaude')}
         />
         <ProviderCard
           title="Codex"
@@ -92,7 +93,7 @@ export const App = () => {
           usage={usage.codex}
           loading={initialLoading}
           now={now}
-          emptyHint="No data yet. Open chatgpt.com while signed in, then refresh."
+          emptyHint={msg('emptyCodex')}
         />
       </div>
 
@@ -103,10 +104,10 @@ export const App = () => {
           target="_blank"
           rel="noreferrer"
         >
-          Source code
+          {msg('sourceCode')}
         </a>
         <span aria-hidden="true">·</span>
-        <span>GitHub</span>
+        <span>{msg('github')}</span>
       </footer>
     </main>
   );
