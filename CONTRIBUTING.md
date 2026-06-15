@@ -10,9 +10,11 @@ Thanks for contributing to this project.
 ## Local Setup
 
 ```bash
-npm ci
-npm run lint
-npm run build
+corepack enable
+pnpm install
+pnpm lint
+pnpm test
+pnpm build
 ```
 
 ## Workflow
@@ -25,9 +27,10 @@ npm run build
 ## Quality Checks
 
 ```bash
-npm run lint
-npm run format:check
-npm run build
+pnpm lint
+pnpm format:check
+pnpm test
+pnpm build
 ```
 
 ## Architecture Expectations

@@ -8,9 +8,10 @@ Describe what this PR changes and why.
 
 ## Validation
 
-- [ ] `npm run lint`
-- [ ] `npm run format:check`
-- [ ] `npm run build`
+- [ ] `pnpm lint`
+- [ ] `pnpm format:check`
+- [ ] `pnpm test`
+- [ ] `pnpm build`
 
 ## Risks
 

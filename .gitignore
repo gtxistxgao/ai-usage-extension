@@ -5,3 +5,6 @@ dist
 /.idea
 /release
 /analyze
+coverage
+.env
+.env.*

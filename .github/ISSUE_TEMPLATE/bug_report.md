@@ -26,7 +26,7 @@ What actually happened.
 
 ## Environment
 
-- NanoChat version:
+- AI Usage Tracker version:
 - Chrome version:
 - OS:
 

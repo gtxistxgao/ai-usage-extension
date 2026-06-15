@@ -1,5 +1,8 @@
 # AI Usage Tracker
 
+[![CI](https://github.com/cupcakedev/ai-usage-extension/actions/workflows/ci.yml/badge.svg)](https://github.com/cupcakedev/ai-usage-extension/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A Chrome extension (Manifest V3) that tracks your **Claude** and **Codex** usage
 limits — both the 5-hour session window and the 7-day weekly window — and surfaces
 them in a popup, an on-page overlay, and the toolbar badge.
@@ -13,6 +16,26 @@ them in a popup, an on-page overlay, and the toolbar badge.
 - **Background refresh** every 5 minutes via `chrome.alarms`, plus on-demand refresh.
 - **Private by design**: usage is read from your own authenticated sessions with
   Claude and OpenAI. No external servers, no accounts, no tracking.
+
+## Install
+
+The extension is not distributed through npm. For normal use, install a packaged
+release from the GitHub releases page or load a local build in Chrome.
+
+To load a local build:
+
+```bash
+corepack enable
+pnpm install
+pnpm build
+```
+
+Then:
+
+1. Open `chrome://extensions`.
+2. Enable **Developer mode**.
+3. Click **Load unpacked** and select the `dist/` directory.
+4. Sign in to `claude.ai` and `chatgpt.com`, then open the popup and refresh.
 
 ## Architecture
 
@@ -41,37 +64,57 @@ snapshot and subscribe to `chrome.storage.onChanged`, so every surface stays in 
 
 ## Getting Started
 
+### Requirements
+
+- Node.js 20 or newer
+- pnpm 9.15.0 via Corepack
+- Chrome or another Chromium browser that supports Manifest V3 extensions
+
 ### Install dependencies
 
 ```bash
-npm install
+corepack enable
+pnpm install
 ```
 
 ### Develop
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Builds to `dist/` and watches for changes.
 
-### Load in Chrome
+### Verify
 
-1. Open `chrome://extensions`.
-2. Enable **Developer mode**.
-3. Click **Load unpacked** and select the `dist/` directory.
-4. Sign in to `claude.ai` and `chatgpt.com`, then open the popup and refresh.
+```bash
+pnpm lint
+pnpm format:check
+pnpm test
+pnpm build
+```
 
 ## Scripts
 
 | Command              | Description                                   |
 | -------------------- | --------------------------------------------- |
-| `npm run dev`        | Build and watch for development.              |
-| `npm run build`      | Type-check, then produce a production build.  |
-| `npm run release`    | Build and package `dist/` into `release/*.zip`. |
-| `npm run typecheck`  | Run `tsc` with no emit.                       |
-| `npm run lint`       | Lint `src/` with ESLint.                      |
-| `npm run format`     | Format `src/` with Prettier.                  |
+| `pnpm dev`           | Build and watch for development.              |
+| `pnpm build`         | Type-check, then produce a production build.  |
+| `pnpm release`       | Test, build, and package `dist/` into `release/*.zip`. |
+| `pnpm typecheck`     | Run `tsc` with no emit.                       |
+| `pnpm test`          | Run release-gate checks for store metadata.   |
+| `pnpm lint`          | Lint `src/` with ESLint.                      |
+| `pnpm format`        | Format `src/` with Prettier.                  |
+
+## Contributing
+
+Issues and pull requests are welcome. Please read [CONTRIBUTING.md](./CONTRIBUTING.md)
+before opening a larger change.
+
+## Security
+
+Please do not open public issues for suspected vulnerabilities. Follow
+[SECURITY.md](./SECURITY.md) instead.
 
 ## License
 

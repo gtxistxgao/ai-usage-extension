@@ -71,7 +71,9 @@ const OverlayMetric: React.FC<OverlayMetricProps> = ({ label, limit, now }) => {
 
 const isClaude = window.location.hostname.includes('claude.ai');
 const enabledKey = isClaude ? STORAGE_KEYS.claudeOverlayEnabled : STORAGE_KEYS.codexOverlayEnabled;
-const collapsedKey = isClaude ? STORAGE_KEYS.claudeOverlayCollapsed : STORAGE_KEYS.codexOverlayCollapsed;
+const collapsedKey = isClaude
+  ? STORAGE_KEYS.claudeOverlayCollapsed
+  : STORAGE_KEYS.codexOverlayCollapsed;
 const usageField = isClaude ? 'claude' : 'codex';
 const brandAsset = isClaude ? claudeBrandAsset : codexBrandAsset;
 const title = isClaude ? 'Claude' : 'Codex';
@@ -162,15 +164,18 @@ const UsageOverlay: React.FC = () => {
     setIsRefreshing(true);
     try {
       await requestUsageRefresh();
-    } catch {
+    } catch (error) {
+      console.debug('Failed to refresh usage limits from overlay', error);
     } finally {
       setIsRefreshing(false);
     }
   }, []);
 
   useEffect(() => {
-    void runRefresh();
-  }, [runRefresh]);
+    void requestUsageRefresh().catch((error) => {
+      console.debug('Failed to refresh usage limits from overlay', error);
+    });
+  }, []);
 
   const toggleCollapsed = useCallback((): void => {
     setCollapsed((prev) => {
