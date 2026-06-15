@@ -366,6 +366,36 @@ input {
   line-height: 1.5;
 }
 
+/* ---- Footer --------------------------------------------------------- */
+
+.au-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 2px 0 0;
+  color: var(--au-text-faint);
+  font-size: 11px;
+}
+
+.au-footer__link {
+  color: var(--au-text-muted);
+  text-decoration: none;
+  text-underline-offset: 3px;
+  transition: color 120ms ease;
+}
+
+.au-footer__link:hover {
+  color: var(--au-text);
+  text-decoration: underline;
+}
+
+.au-footer__link:focus-visible {
+  outline: 2px solid var(--au-line-strong);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 /* ---- Loading skeleton ---------------------------------------------- */
 
 .au-loader {

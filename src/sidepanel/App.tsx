@@ -95,6 +95,19 @@ export const App = () => {
           emptyHint="No data yet. Open chatgpt.com while signed in, then refresh."
         />
       </div>
+
+      <footer className="au-footer">
+        <a
+          className="au-footer__link"
+          href="https://github.com/cupcakedev/ai-usage-extension"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Source code
+        </a>
+        <span aria-hidden="true">·</span>
+        <span>GitHub</span>
+      </footer>
     </main>
   );
 };
