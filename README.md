@@ -99,6 +99,7 @@ pnpm build
 | Command              | Description                                   |
 | -------------------- | --------------------------------------------- |
 | `pnpm dev`           | Build and watch for development.              |
+| `pnpm bump`          | Bump `package.json` and `manifest.json` patch versions. |
 | `pnpm build`         | Type-check, then produce a production build.  |
 | `pnpm release`       | Test, build, and package `dist/` into `release/*.zip`. |
 | `pnpm typecheck`     | Run `tsc` with no emit.                       |

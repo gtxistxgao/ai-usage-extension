@@ -30,6 +30,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite build --watch --mode development",
+		"bump": "node scripts/bump-version.js",
 		"typecheck": "tsc --noEmit",
 		"test": "node --test tests/",
 		"build": "tsc --noEmit && vite build",
