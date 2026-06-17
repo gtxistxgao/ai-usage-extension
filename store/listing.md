@@ -45,6 +45,8 @@ Great for:
 - Professionals and students who want to avoid interrupting their deep work flow
 - Anyone tired of hitting "you've reached your limit" with no prior warning
 
+Source code: https://github.com/cupcakedev/ai-usage-extension
+
 ## Category
 
 Productivity

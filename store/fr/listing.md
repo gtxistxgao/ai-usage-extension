@@ -38,6 +38,8 @@ Idéal pour :
 - Professionnels et étudiants qui veulent éviter d’interrompre leur flux de travail profond
 - Toute personne fatiguée de voir “vous avez atteint votre limite” sans avertissement préalable
 
+Code source: https://github.com/cupcakedev/ai-usage-extension
+
 ## Keywords
 
 utilisation claude, limites claude, limites chatgpt, utilisation codex, suivi usage ia, rate limit, réinitialisation claude, quota chatgpt, usage openai, productivité

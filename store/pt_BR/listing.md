@@ -38,6 +38,8 @@ Por que os usuários escolhem AI Usage Tracker:
 - Profissionais e estudantes que querem evitar interrupções no fluxo de trabalho profundo
 - Qualquer pessoa cansada de receber “você atingiu seu limite” sem aviso prévio
 
+Código-fonte: https://github.com/cupcakedev/ai-usage-extension
+
 ## Keywords
 
 uso claude, limites claude, limites chatgpt, uso codex, rastreador uso ia, limite de taxa, reset claude, cota chatgpt, uso openai, produtividade

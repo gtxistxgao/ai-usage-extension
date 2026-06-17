@@ -38,6 +38,8 @@ AI Usage Tracker: Claude और Codex की सीमाएं उन लोग
 - प्रोफेशनल और छात्र, जो अपने गहरे काम के प्रवाह में रुकावट नहीं चाहते
 - कोई भी व्यक्ति जो बिना पहले से चेतावनी मिले “you've reached your limit” देखकर थक चुका है
 
+स्रोत कोड: https://github.com/cupcakedev/ai-usage-extension
+
 ## Keywords
 
 claude उपयोग, claude सीमाएं, chatgpt सीमाएं, codex उपयोग, ai usage tracker, सीमा ट्रैकर, claude reset, chatgpt quota, openai उपयोग, उत्पादकता

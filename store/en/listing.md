@@ -38,6 +38,8 @@ Great for:
 - Professionals and students who want to avoid interrupting their deep work flow
 - Anyone tired of hitting "you've reached your limit" with no prior warning
 
+Source code: https://github.com/cupcakedev/ai-usage-extension
+
 ## Keywords
 
 claude usage, claude limits, chatgpt limits, codex usage, ai usage tracker, rate limit tracker, claude reset, chatgpt quota, openai usage, productivity
