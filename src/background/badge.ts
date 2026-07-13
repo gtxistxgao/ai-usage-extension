@@ -38,7 +38,9 @@ const summarizeUsage = (state: UsageState): UsageSummary | null => {
     ...(['claude', 'codex'] as const).flatMap((provider) => {
       const usage = state[provider];
       if (!usage) return [];
-      return [`${PROVIDER_TITLE[provider]} · ${SESSION_LABEL} ${clampPercent(usage.session.percentage)}%`];
+      return [
+        `${PROVIDER_TITLE[provider]} · ${SESSION_LABEL} ${clampPercent(usage.session.percentage)}%`,
+      ];
     }),
   ].join('\n');
 
