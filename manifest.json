@@ -20,6 +20,11 @@
   },
   "action": {
     "default_popup": "src/sidepanel.html",
+    "default_icon": {
+      "16": "icons/badges/range-10.png",
+      "48": "icons/badges/range-10.png",
+      "128": "icons/badges/range-10.png"
+    },
     "default_title": "__MSG_appShortName__"
   },
   "content_scripts": [
