@@ -22,6 +22,7 @@
     "default_popup": "src/sidepanel.html",
     "default_icon": {
       "16": "icons/badges/range-10.png",
+      "32": "icons/badges/range-10.png",
       "48": "icons/badges/range-10.png",
       "128": "icons/badges/range-10.png"
     },

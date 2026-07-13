@@ -2,12 +2,45 @@ import { msg } from '../shared/i18n';
 import type { ProviderId, UsageState } from '../shared/types';
 import { clampPercent } from '../shared/utils';
 
-const DEFAULT_ICON_PATH = 'icons/badges/range-10.png';
+const iconPath = (range: number): string => `icons/badges/range-${range}.png`;
 
-const stepIconPath = (percent: number): string => {
+const ICON_SIZES = [16, 32, 48, 128] as const;
+type IconSize = (typeof ICON_SIZES)[number];
+type ActionIconData = Record<IconSize, ImageData>;
+
+const loadIconData = async (range: number, size: IconSize): Promise<[IconSize, ImageData]> => {
+  const response = await fetch(chrome.runtime.getURL(iconPath(range)));
+  if (!response.ok) {
+    throw new Error(`Unable to load badge icon for ${range}%`);
+  }
+
+  const canvas = new OffscreenCanvas(size, size);
+  const context = canvas.getContext('2d');
+  if (!context) {
+    throw new Error('Unable to render badge icon');
+  }
+
+  const bitmap = await createImageBitmap(await response.blob());
+  try {
+    context.drawImage(bitmap, 0, 0, size, size);
+    return [size, context.getImageData(0, 0, size, size)];
+  } finally {
+    bitmap.close();
+  }
+};
+
+const actionIconData = async (range: number): Promise<ActionIconData> =>
+  Object.fromEntries(
+    await Promise.all(ICON_SIZES.map((size) => loadIconData(range, size))),
+  ) as ActionIconData;
+
+const setActionIcon = async (range: number): Promise<void> => {
+  await chrome.action.setIcon({ imageData: await actionIconData(range) });
+};
+
+const iconRange = (percent: number): number => {
   const clamped = clampPercent(percent);
-  const range = Math.max(10, Math.ceil(clamped / 10) * 10);
-  return `icons/badges/range-${range}.png`;
+  return Math.max(10, Math.ceil(clamped / 10) * 10);
 };
 
 const PROVIDER_TITLE: Record<ProviderId, string> = { claude: 'Claude', codex: 'Codex' };
@@ -49,7 +82,7 @@ const summarizeUsage = (state: UsageState): UsageSummary | null => {
 
 const resetBadge = async (): Promise<void> => {
   await Promise.all([
-    chrome.action.setIcon({ path: DEFAULT_ICON_PATH }),
+    setActionIcon(10),
     chrome.action.setBadgeText({ text: '' }),
     chrome.action.setTitle({ title: msg('appShortName') }),
   ]);
@@ -63,7 +96,7 @@ export const updateBadge = async (state: UsageState): Promise<void> => {
   }
 
   await Promise.all([
-    chrome.action.setIcon({ path: stepIconPath(summary.percent) }),
+    setActionIcon(iconRange(summary.percent)),
     chrome.action.setBadgeText({ text: '' }),
     chrome.action.setTitle({ title: summary.tooltip }),
   ]);

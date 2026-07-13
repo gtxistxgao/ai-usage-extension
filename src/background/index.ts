@@ -3,14 +3,35 @@ import type { ExtensionMessage, RefreshUsageResponse, UsageState } from '../shar
 import { updateBadge } from './badge';
 import { UsageService } from './services/UsageService';
 
-const refreshUsage = async (): Promise<UsageState> => {
-  const state = await UsageService.refreshAllUsage();
-  await updateBadge(state);
-  return state;
+let hasStartedRefresh = false;
+let refreshInFlight: Promise<UsageState> | null = null;
+let badgeUpdateQueue: Promise<void> = Promise.resolve();
+
+const queueBadgeUpdate = (state: UsageState): Promise<void> => {
+  badgeUpdateQueue = badgeUpdateQueue.catch(() => undefined).then(() => updateBadge(state));
+  return badgeUpdateQueue;
+};
+
+const refreshUsage = (): Promise<UsageState> => {
+  if (refreshInFlight) {
+    return refreshInFlight;
+  }
+
+  hasStartedRefresh = true;
+  refreshInFlight = UsageService.refreshAllUsage()
+    .then(async (state) => {
+      await queueBadgeUpdate(state);
+      return state;
+    })
+    .finally(() => {
+      refreshInFlight = null;
+    });
+
+  return refreshInFlight;
 };
 
 void UsageService.getUsageState()
-  .then(updateBadge)
+  .then((state) => (hasStartedRefresh ? undefined : queueBadgeUpdate(state)))
   .catch(() => undefined);
 
 chrome.runtime.onInstalled.addListener(() => {
