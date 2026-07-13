@@ -40,7 +40,7 @@ const setActionIcon = async (range: number): Promise<void> => {
 
 const iconRange = (percent: number): number => {
   const clamped = clampPercent(percent);
-  return Math.max(10, Math.ceil(clamped / 10) * 10);
+  return Math.max(10, Math.floor(clamped / 10) * 10);
 };
 
 const PROVIDER_TITLE: Record<ProviderId, string> = { claude: 'Claude', codex: 'Codex' };
