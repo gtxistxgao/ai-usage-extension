@@ -14,6 +14,8 @@ interface ProviderCardProps {
   usage?: ProviderUsage;
   loading: boolean;
   now: number;
+  /** Whether to show the per-model usage breakdown. */
+  showModels?: boolean;
   /** Hint shown when the provider has no snapshot yet. */
   emptyHint: string;
   /** Optional content pinned to the bottom of the card (e.g. a setting). */
@@ -36,6 +38,7 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
   usage,
   loading,
   now,
+  showModels = false,
   emptyHint,
   footer,
 }) => {
@@ -53,6 +56,17 @@ export const ProviderCard: React.FC<ProviderCardProps> = ({
         <>
           <UsageMetric label={msg('sessionLimit')} limit={usage.session} now={now} />
           <UsageMetric label={msg('weeklyLimit')} limit={usage.weekly} now={now} />
+          {showModels &&
+            (usage.models?.length ? (
+              <div className="au-models">
+                <p className="au-models__title">{msg('modelUsageHeading')}</p>
+                {usage.models.map((model) => (
+                  <UsageMetric key={model.id} label={model.label} limit={model.limit} now={now} />
+                ))}
+              </div>
+            ) : (
+              <p className="au-footnote">{msg('modelUsageEmpty')}</p>
+            ))}
           {'plan' in usage && usage.plan !== 'unknown' && (
             <p className="au-footnote">{msg('planLabel', usage.plan)}</p>
           )}

@@ -11,12 +11,14 @@ export const App = () => {
     usage,
     claudeOverlayEnabled,
     codexOverlayEnabled,
+    showModelUsage,
     loading,
     refreshing,
     error,
     refresh,
     setClaudeOverlayEnabled,
     setCodexOverlayEnabled,
+    setShowModelUsage,
   } = useUsageData();
   const now = useNow(30_000);
 
@@ -74,6 +76,17 @@ export const App = () => {
             <span className="au-switch__slider" />
           </label>
         </div>
+        <div className="au-overlay-toggle">
+          <p className="au-overlay-toggle__label">{msg('modelUsageToggleLabel')}</p>
+          <label className="au-switch" aria-label={msg('modelUsageToggleLabel')}>
+            <input
+              type="checkbox"
+              checked={showModelUsage}
+              onChange={(event) => setShowModelUsage(event.target.checked)}
+            />
+            <span className="au-switch__slider" />
+          </label>
+        </div>
       </div>
 
       <div className="au-cards">
@@ -84,6 +97,7 @@ export const App = () => {
           usage={usage.claude}
           loading={initialLoading}
           now={now}
+          showModels={showModelUsage}
           emptyHint={msg('emptyClaude')}
         />
         <ProviderCard
@@ -93,6 +107,7 @@ export const App = () => {
           usage={usage.codex}
           loading={initialLoading}
           now={now}
+          showModels={showModelUsage}
           emptyHint={msg('emptyCodex')}
         />
       </div>

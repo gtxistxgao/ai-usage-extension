@@ -8,18 +8,21 @@ export interface UsageData {
   usage: UsageState;
   claudeOverlayEnabled: boolean;
   codexOverlayEnabled: boolean;
+  showModelUsage: boolean;
   loading: boolean;
   refreshing: boolean;
   error: string | null;
   refresh: () => Promise<void>;
   setClaudeOverlayEnabled: (enabled: boolean) => void;
   setCodexOverlayEnabled: (enabled: boolean) => void;
+  setShowModelUsage: (enabled: boolean) => void;
 }
 
 export const useUsageData = (): UsageData => {
   const [usage, setUsage] = useState<UsageState>({});
   const [claudeOverlayEnabled, setClaudeOverlayState] = useState(true);
   const [codexOverlayEnabled, setCodexOverlayState] = useState(true);
+  const [showModelUsage, setShowModelUsageState] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +36,7 @@ export const useUsageData = (): UsageData => {
         chrome.storage.local.get([
           STORAGE_KEYS.claudeOverlayEnabled,
           STORAGE_KEYS.codexOverlayEnabled,
+          STORAGE_KEYS.showModelUsage,
         ]),
       ]);
 
@@ -43,6 +47,7 @@ export const useUsageData = (): UsageData => {
       setUsage(state);
       setClaudeOverlayState(settings[STORAGE_KEYS.claudeOverlayEnabled] !== false);
       setCodexOverlayState(settings[STORAGE_KEYS.codexOverlayEnabled] !== false);
+      setShowModelUsageState(settings[STORAGE_KEYS.showModelUsage] === true);
       setLoading(false);
     };
 
@@ -66,6 +71,10 @@ export const useUsageData = (): UsageData => {
 
       if (changes[STORAGE_KEYS.codexOverlayEnabled]) {
         setCodexOverlayState(changes[STORAGE_KEYS.codexOverlayEnabled].newValue !== false);
+      }
+
+      if (changes[STORAGE_KEYS.showModelUsage]) {
+        setShowModelUsageState(changes[STORAGE_KEYS.showModelUsage].newValue === true);
       }
     };
 
@@ -98,15 +107,22 @@ export const useUsageData = (): UsageData => {
     void chrome.storage.local.set({ [STORAGE_KEYS.codexOverlayEnabled]: enabled });
   }, []);
 
+  const setShowModelUsage = useCallback((enabled: boolean): void => {
+    setShowModelUsageState(enabled);
+    void chrome.storage.local.set({ [STORAGE_KEYS.showModelUsage]: enabled });
+  }, []);
+
   return {
     usage,
     claudeOverlayEnabled,
     codexOverlayEnabled,
+    showModelUsage,
     loading,
     refreshing,
     error,
     refresh,
     setClaudeOverlayEnabled,
     setCodexOverlayEnabled,
+    setShowModelUsage,
   };
 };

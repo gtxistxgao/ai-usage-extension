@@ -29,6 +29,15 @@
   "overlayToggleLabel": {
     "message": "Superposiciones en página"
   },
+  "modelUsageToggleLabel": {
+    "message": "Uso por modelo"
+  },
+  "modelUsageHeading": {
+    "message": "Modelos"
+  },
+  "modelUsageEmpty": {
+    "message": "Aún no hay datos por modelo. Actualiza para obtener la última instantánea."
+  },
   "loadingSnapshot": {
     "message": "cargando datos"
   },

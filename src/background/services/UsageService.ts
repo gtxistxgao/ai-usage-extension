@@ -1,5 +1,5 @@
 import { STORAGE_KEYS } from '../../shared/constants';
-import { ClaudeUsage, CodexUsage, UsageLimit, UsageState } from '../../shared/types';
+import { ClaudeUsage, CodexUsage, ModelUsage, UsageLimit, UsageState } from '../../shared/types';
 import { clampPercent, getUsageTone } from '../../shared/utils';
 
 const ENDPOINTS = {
@@ -45,11 +45,55 @@ const finalize = <T extends { session: UsageLimit; weekly: UsageLimit }>(payload
   lastUpdated: Date.now(),
 });
 
+/** Turn a model slug like `gpt-5-codex` or `opus` into a display label. */
+const prettifyModelName = (slug: string): string =>
+  slug
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((word) => (word === 'gpt' ? 'GPT' : word.charAt(0).toUpperCase() + word.slice(1)))
+    .join(' ')
+    .replace(/\bGPT (\d)/g, 'GPT-$1');
+
 /* -------------------- Claude -------------------- */
 
 const claudeWindowFrom = (window: unknown): UsageLimit => {
   if (!isObject(window)) return buildLimit(0, null);
   return buildLimit(readNumber(window.utilization), readString(window.resets_at));
+};
+
+/**
+ * Model-scoped windows arrive as extra top-level keys alongside the account
+ * windows, e.g. `seven_day_opus` for the Opus weekly limit.
+ */
+const CLAUDE_WINDOW_PREFIXES: Array<[prefix: string, tag: string]> = [
+  ['five_hour_', '5h'],
+  ['seven_day_', '7d'],
+];
+
+const CLAUDE_WINDOW_LABELS: Record<string, string> = {
+  opus: 'Opus',
+  sonnet: 'Sonnet',
+  haiku: 'Haiku',
+  oauth_apps: 'Claude Code',
+};
+
+const claudeModelUsages = (raw: Json): ModelUsage[] => {
+  const models: ModelUsage[] = [];
+
+  for (const [key, value] of Object.entries(raw)) {
+    if (!isObject(value) || readNumber(value.utilization) === null) continue;
+
+    const match = CLAUDE_WINDOW_PREFIXES.find(([prefix]) => key.startsWith(prefix));
+    if (!match) continue;
+
+    const slug = key.slice(match[0].length);
+    if (!slug) continue;
+
+    const label = CLAUDE_WINDOW_LABELS[slug] ?? prettifyModelName(slug);
+    models.push({ id: key, label: `${label} · ${match[1]}`, limit: claudeWindowFrom(value) });
+  }
+
+  return models;
 };
 
 const buildClaudeUsage = (raw: Json | null): ClaudeUsage | null => {
@@ -61,6 +105,7 @@ const buildClaudeUsage = (raw: Json | null): ClaudeUsage | null => {
       session: claudeWindowFrom(raw.five_hour),
       weekly: claudeWindowFrom(raw.seven_day),
     }),
+    models: claudeModelUsages(raw),
     raw,
   };
 };
@@ -103,6 +148,80 @@ const codexWindowFrom = (window: unknown): UsageLimit => {
   return buildLimit(readNumber(window.used_percent), codexResetTimestamp(window));
 };
 
+/** Containers the usage payload may use for a per-model breakdown. */
+const CODEX_BREAKDOWN_KEYS = [
+  'rate_limits',
+  'model_rate_limits',
+  'additional_rate_limits',
+  'model_limits',
+  'usage_breakdown',
+  'models',
+] as const;
+
+const codexEntryName = (entry: Json): string | null =>
+  firstString(entry.model, entry.model_slug, entry.name, entry.limit_name, entry.label, entry.id);
+
+/** Turn a window's duration into a `5h` / `7d` style tag, if present. */
+const codexWindowTag = (window: Json, fallback: string): string => {
+  const minutes = readNumber(window.window_minutes) ?? readNumber(window.window_duration_minutes);
+  if (minutes === null || minutes <= 0) return fallback;
+  if (minutes % 1440 === 0) return `${minutes / 1440}d`;
+  if (minutes % 60 === 0) return `${minutes / 60}h`;
+  return `${minutes}m`;
+};
+
+const pushCodexModel = (models: ModelUsage[], id: string, name: string, entry: Json): void => {
+  const label = prettifyModelName(name);
+
+  // The entry may itself be a single rate-limit window…
+  if (readNumber(entry.used_percent) !== null) {
+    models.push({
+      id,
+      label: `${label} · ${codexWindowTag(entry, '5h')}`,
+      limit: codexWindowFrom(entry),
+    });
+    return;
+  }
+
+  // …or wrap primary/secondary windows like the account-level rate_limit.
+  const windows: Array<[unknown, string]> = [
+    [entry.primary_window, '5h'],
+    [entry.secondary_window, '7d'],
+  ];
+  for (const [window, fallbackTag] of windows) {
+    if (!isObject(window) || readNumber(window.used_percent) === null) continue;
+    models.push({
+      id: `${id}:${fallbackTag}`,
+      label: `${label} · ${codexWindowTag(window, fallbackTag)}`,
+      limit: codexWindowFrom(window),
+    });
+  }
+};
+
+const codexModelUsages = (raw: Json): ModelUsage[] => {
+  const models: ModelUsage[] = [];
+
+  for (const key of CODEX_BREAKDOWN_KEYS) {
+    const container = raw[key];
+
+    if (Array.isArray(container)) {
+      container.forEach((entry, index) => {
+        if (!isObject(entry)) return;
+        const name = codexEntryName(entry);
+        if (!name) return;
+        pushCodexModel(models, `${key}[${index}]`, name, entry);
+      });
+    } else if (isObject(container)) {
+      for (const [name, entry] of Object.entries(container)) {
+        if (!isObject(entry)) continue;
+        pushCodexModel(models, `${key}.${name}`, name, entry);
+      }
+    }
+  }
+
+  return models;
+};
+
 const buildCodexUsage = (raw: Json | null): CodexUsage | null => {
   if (!raw) return null;
   const rate = isObject(raw.rate_limit) ? raw.rate_limit : null;
@@ -112,6 +231,7 @@ const buildCodexUsage = (raw: Json | null): CodexUsage | null => {
       session: codexWindowFrom(rate?.primary_window),
       weekly: codexWindowFrom(rate?.secondary_window),
     }),
+    models: codexModelUsages(raw),
     raw,
   };
 };

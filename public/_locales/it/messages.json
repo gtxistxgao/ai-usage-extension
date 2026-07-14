@@ -29,6 +29,15 @@
   "overlayToggleLabel": {
     "message": "Overlay nella pagina"
   },
+  "modelUsageToggleLabel": {
+    "message": "Utilizzo per modello"
+  },
+  "modelUsageHeading": {
+    "message": "Modelli"
+  },
+  "modelUsageEmpty": {
+    "message": "Ancora nessun dato per modello. Aggiorna per ottenere l'ultimo snapshot."
+  },
   "loadingSnapshot": {
     "message": "caricamento dati"
   },
