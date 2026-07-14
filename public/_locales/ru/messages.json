@@ -29,6 +29,15 @@
   "overlayToggleLabel": {
     "message": "Оверлеи на страницах"
   },
+  "modelUsageToggleLabel": {
+    "message": "Использование по моделям"
+  },
+  "modelUsageHeading": {
+    "message": "Модели"
+  },
+  "modelUsageEmpty": {
+    "message": "Пока нет данных по моделям. Обновите, чтобы получить последний снимок."
+  },
   "loadingSnapshot": {
     "message": "загрузка данных"
   },

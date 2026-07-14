@@ -14,6 +14,8 @@ export const STORAGE_KEYS = {
   claudeOverlayCollapsed: 'claude_overlay_collapsed',
   codexOverlayEnabled: 'codex_overlay_enabled',
   codexOverlayCollapsed: 'codex_overlay_collapsed',
+  /** Whether the popup shows the per-model usage breakdown. */
+  showModelUsage: 'show_model_usage',
 } as const;
 
 /** Name of the recurring alarm that refreshes usage in the background. */

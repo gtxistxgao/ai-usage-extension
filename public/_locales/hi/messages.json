@@ -29,6 +29,15 @@
   "overlayToggleLabel": {
     "message": "पेज ओवरले"
   },
+  "modelUsageToggleLabel": {
+    "message": "मॉडल के अनुसार उपयोग"
+  },
+  "modelUsageHeading": {
+    "message": "मॉडल"
+  },
+  "modelUsageEmpty": {
+    "message": "अभी मॉडल-वार डेटा उपलब्ध नहीं है। नवीनतम स्नैपशॉट के लिए रीफ़्रेश करें।"
+  },
   "loadingSnapshot": {
     "message": "डेटा लोड हो रहा है"
   },

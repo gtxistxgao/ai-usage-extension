@@ -29,6 +29,15 @@
   "overlayToggleLabel": {
     "message": "On-page overlays"
   },
+  "modelUsageToggleLabel": {
+    "message": "Per-model usage"
+  },
+  "modelUsageHeading": {
+    "message": "Models"
+  },
+  "modelUsageEmpty": {
+    "message": "No per-model data yet. Refresh to fetch the latest snapshot."
+  },
   "loadingSnapshot": {
     "message": "loading snapshot"
   },

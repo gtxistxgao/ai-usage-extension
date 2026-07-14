@@ -29,6 +29,15 @@
   "overlayToggleLabel": {
     "message": "ページ内オーバーレイ"
   },
+  "modelUsageToggleLabel": {
+    "message": "モデル別の使用状況"
+  },
+  "modelUsageHeading": {
+    "message": "モデル"
+  },
+  "modelUsageEmpty": {
+    "message": "モデル別のデータはまだありません。更新して最新のスナップショットを取得してください。"
+  },
   "loadingSnapshot": {
     "message": "データを読み込み中"
   },

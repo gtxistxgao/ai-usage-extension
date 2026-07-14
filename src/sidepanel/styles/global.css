@@ -350,6 +350,23 @@ input {
   color: var(--au-text-muted);
 }
 
+.au-models {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--au-line);
+}
+
+.au-models__title {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--au-text-faint);
+}
+
 .au-footnote {
   margin: 0;
   padding-top: 14px;
